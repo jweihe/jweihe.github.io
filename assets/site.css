@@ -264,6 +264,30 @@ nav a:hover,
   letter-spacing: 0.05em;
 }
 
+.logo-bd {
+  background: linear-gradient(135deg, #111111 0%, #222222 48%, #00f2ea 49%, #00f2ea 58%, #ff0050 59%, #ff0050 100%);
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.logo-ali {
+  background: linear-gradient(135deg, #ff6a00, #ff9f1a);
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.logo-tencent {
+  background: linear-gradient(135deg, #1a73e8, #00a3ff);
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.logo-ict {
+  background: linear-gradient(135deg, #6f4938, #a57a5e);
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
 .logo-chip p {
   margin: 0;
   font-size: 14px;
@@ -309,11 +333,41 @@ nav a:hover,
   line-height: 1.35;
 }
 
+.featured-item h3 a:hover,
+.pub-item h2 a:hover {
+  color: var(--accent);
+}
+
 .featured-item p {
   margin: 0;
   color: var(--muted);
   font-size: 16px;
   line-height: 1.75;
+}
+
+.action-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.action-links a {
+  border: 1px solid var(--faint);
+  border-radius: 999px;
+  color: var(--accent);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  text-transform: uppercase;
+}
+
+.action-links a:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--paper);
 }
 
 .project-grid {
