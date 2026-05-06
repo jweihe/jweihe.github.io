@@ -1,85 +1,122 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>莫道</title>
-  <meta name="description" content="个人主页与博客。">
+  <title>Modao</title>
+  <meta name="description" content="Personal homepage for research, projects, and writing.">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/">莫道</a>
-    <nav aria-label="站点导航">
-      <a href="about.html">关于</a>
-      <a href="publications.html">论文</a>
-      <a href="projects.html">项目</a>
-      <a href="blog.html">博文</a>
-      <a href="notes.html">札记</a>
-      <a href="en.html">EN</a>
+    <a class="brand" href="/">Modao</a>
+    <nav aria-label="Site navigation">
+      <a href="about.html">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Writing</a>
+      <a href="notes.html">Notes</a>
     </nav>
   </header>
 
   <main>
-    <section class="home-sheet" aria-labelledby="home-title">
-      <aside class="home-mark">
-        <p class="kicker">莫道</p>
-        <h1 id="home-title">桑榆晚<br>霞满天</h1>
-        <p>莫道桑榆晚，为霞尚满天。</p>
-        <div class="hero-links" aria-label="外部链接">
+    <section class="home-shell" aria-labelledby="home-title">
+      <aside class="identity-panel">
+        <p class="kicker">Modao</p>
+        <h1 id="home-title">AGI is already here.</h1>
+        <p class="motto">We are standing in the hour before dawn.</p>
+        <p class="identity-copy">I work on agentic LLMs, multimodal reasoning, graph learning, and evaluation-driven systems.</p>
+        <div class="hero-links" aria-label="External links">
           <a href="https://scholar.google.com/citations?user=gjLPqSQAAAAJ&hl=en">Scholar</a>
           <a href="https://github.com/jweihe">GitHub</a>
-          <a href="en.html">English</a>
+          <a href="publications.html">Papers</a>
         </div>
       </aside>
 
-      <div class="home-index">
-        <section class="index-block">
-          <span class="index-no">01</span>
+      <div class="home-main">
+        <section class="statement">
+          <span class="icon-mark">∴</span>
           <div>
-            <h2>关于</h2>
-            <p>大语言模型、多模态推理、图学习与智能体评测。现在从事大模型算法研发，之前在计算所完成硕士阶段研究。</p>
-            <a class="text-link" href="about.html">查看简介</a>
+            <h2>Research and engineering, held together.</h2>
+            <p>My recent work sits at the boundary of large model systems and measurable intelligence: building agents that can reason, use tools, follow long-horizon plans, and improve through online evaluation, data feedback, and reinforcement learning.</p>
           </div>
         </section>
 
-        <section class="index-block">
-          <span class="index-no">02</span>
-          <div>
-            <h2>论文</h2>
-            <ul class="plain-list">
-              <li><a href="publications.html">ADA-GAD</a><span>AAAI 2024 · CCF A</span></li>
-              <li><a href="publications.html">HGOE</a><span>ACM MM 2024 · CCF A</span></li>
-              <li><a href="publications.html">RHKH</a><span>ACM MM 2024 · CCF A</span></li>
-              <li><a href="publications.html">SkillsBench</a><span>arXiv 2026</span></li>
-            </ul>
-          </div>
+        <section class="signal-strip" aria-label="Profile highlights">
+          <div><strong>7</strong><span>Scholar papers</span></div>
+          <div><strong>100+</strong><span>citations</span></div>
+          <div><strong>3</strong><span>CCF-A works</span></div>
+          <div><strong>2</strong><span>agent infra projects</span></div>
         </section>
 
-        <section class="index-block">
-          <span class="index-no">03</span>
-          <div>
-            <h2>项目</h2>
-            <p>参与 SkillsBench 与 Harbor，也维护过图异常检测相关研究代码。</p>
-            <a class="text-link" href="projects.html">查看项目</a>
-          </div>
+        <section class="icon-row" aria-label="Experience">
+          <div class="logo-chip"><span>BD</span><p>ByteDance<br><small>LLM algorithms</small></p></div>
+          <div class="logo-chip"><span>ALI</span><p>Alibaba Taotian<br><small>multimodal LLMs</small></p></div>
+          <div class="logo-chip"><span>ARC</span><p>Tencent ARC Lab<br><small>document understanding</small></p></div>
+          <div class="logo-chip"><span>ICT</span><p>CAS ICT<br><small>graph learning</small></p></div>
         </section>
 
-        <section class="index-block">
-          <span class="index-no">04</span>
-          <div>
-            <h2>博文</h2>
-            <p><a href="posts/night-boundary.html">夜晚是分界线</a>：一则来自梦境的短篇。</p>
-            <a class="text-link" href="blog.html">进入博文</a>
+        <section class="home-section" aria-labelledby="pubs-title">
+          <div class="section-heading">
+            <p class="kicker">Selected Publications</p>
+            <h2 id="pubs-title">Papers</h2>
           </div>
+          <div class="featured-list">
+            <article class="featured-item">
+              <span class="tag">AAAI 2024 · CCF A · 99 citations</span>
+              <h3>Ada-gad: Anomaly-denoised autoencoders for graph anomaly detection</h3>
+              <p>Introduces an anomaly-denoised pretraining and fine-tuning framework for graph anomaly detection, addressing anomaly overfitting and homophily traps. The method has become a strong baseline for graph anomaly detection.</p>
+            </article>
+            <article class="featured-item">
+              <span class="tag">ACM MM 2024 · CCF A</span>
+              <h3>HGOE: Hybrid External and Internal Graph Outlier Exposure</h3>
+              <p>Studies graph out-of-distribution detection with hybrid synthetic and internal outlier exposure, improving robustness when abnormal patterns are scarce or shift across graphs.</p>
+            </article>
+            <article class="featured-item">
+              <span class="tag">ACM MM 2024 · CCF A</span>
+              <h3>RHKH: Relational Hypergraph Neural Network for N-ary Knowledge Hypergraphs</h3>
+              <p>Models n-ary relational facts as hypergraphs for knowledge reasoning, moving beyond binary triples and capturing richer relational structures.</p>
+            </article>
+            <article class="featured-item">
+              <span class="tag">arXiv 2026</span>
+              <h3>SkillsBench: Benchmarking how well agent skills work across diverse tasks</h3>
+              <p>A benchmark for evaluating agent skills across diverse tasks, separating whether a skill is useful from whether an agent can use it effectively.</p>
+            </article>
+          </div>
+          <a class="text-link" href="publications.html">View full publication list</a>
+        </section>
+
+        <section class="home-section" aria-labelledby="projects-title">
+          <div class="section-heading">
+            <p class="kicker">Open Source</p>
+            <h2 id="projects-title">Projects</h2>
+          </div>
+          <div class="project-grid">
+            <article class="project-card">
+              <span class="project-icon">S</span>
+              <h3><a href="https://github.com/benchflow-ai/skillsbench">SkillsBench</a></h3>
+              <p>A benchmark for testing how well reusable agent skills work across tasks, models, and environments.</p>
+            </article>
+            <article class="project-card">
+              <span class="project-icon">H</span>
+              <h3><a href="https://github.com/harbor-framework/harbor">Harbor</a></h3>
+              <p>An evaluation and environment framework for agent tasks, rollouts, and RL-oriented data generation.</p>
+            </article>
+            <article class="project-card">
+              <span class="project-icon">G</span>
+              <h3><a href="https://github.com/jweihe/ADA-GAD">ADA-GAD</a></h3>
+              <p>Official research code for anomaly-denoised autoencoders in graph anomaly detection.</p>
+            </article>
+          </div>
+          <a class="text-link" href="projects.html">View project notes</a>
         </section>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <span>© 莫道</span>
-    <a href="en.html">English</a>
+    <span>© Modao</span>
+    <a href="blog.html">Writing</a>
   </footer>
 </body>
 </html>
