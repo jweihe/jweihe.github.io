@@ -111,9 +111,13 @@ nav a:hover,
 .hero h1 {
   max-width: 780px;
   margin: 22px 0 18px;
-  font-size: clamp(40px, 6vw, 76px);
+  font-size: clamp(38px, 5.2vw, 68px);
   font-weight: 500;
-  line-height: 1.12;
+  line-height: 1.2;
+}
+
+.hero h1 span {
+  display: block;
 }
 
 .hero p:last-child {
@@ -282,7 +286,7 @@ figure img {
   }
 
   .hero h1 {
-    font-size: 42px;
+    font-size: 40px;
   }
 
   .hero p:last-child {
