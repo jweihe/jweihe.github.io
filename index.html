@@ -23,9 +23,9 @@
     <section class="home-shell" aria-labelledby="home-title">
       <aside class="identity-panel">
         <p class="kicker">Modao</p>
-        <h1 id="home-title">AGI is already here.</h1>
-        <p class="motto">We are standing in the hour before dawn.</p>
-        <p class="identity-copy">I work on agentic LLMs, multimodal reasoning, graph learning, and evaluation-driven systems.</p>
+        <h1 id="home-title">AGI is coming.</h1>
+        <p class="motto">I am a firm believer in AGI.</p>
+        <p class="identity-copy">I build and evaluate agentic systems for the road toward it, with recent work across LLM agents, multimodal reasoning, graph learning, and reinforcement-learning loops.</p>
         <div class="hero-links" aria-label="External links">
           <a href="https://scholar.google.com/citations?user=gjLPqSQAAAAJ&hl=en">Scholar</a>
           <a href="https://github.com/jweihe">GitHub</a>
@@ -46,6 +46,23 @@
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/bytedance.svg" alt="ByteDance logo"></span><p>ByteDance<br><small>LLM algorithms</small></p></div>
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/alibaba.svg" alt="Alibaba logo"></span><p>Alibaba Token Hub<br><small>multimodal LLMs</small></p></div>
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/tencent.svg" alt="Tencent logo"></span><p>Tencent ARC Lab<br><small>document understanding</small></p></div>
+        </section>
+
+        <section class="home-section news-panel" aria-labelledby="news-title">
+          <div class="section-heading section-heading-inline">
+            <div>
+              <p class="kicker">News</p>
+              <h2 id="news-title">Recent Signals</h2>
+            </div>
+            <span class="news-mark">Live</span>
+          </div>
+          <ol class="news-list">
+            <li><time datetime="2026-05">May 2026</time><p>SkillsBench became the fastest benchmark repository to reach 1k GitHub stars, with 1.1k stars within two months of release</p></li>
+            <li><time datetime="2026-05">May 2026</time><p>SkillsBench appeared in recent model-card and release discussions, including Qwen 3.6 Plus and HY-3</p></li>
+            <li><time datetime="2026-05">May 2026</time><p>SkillsBench now covers 86 tasks, 11 domains, 7,308 trajectories, and 40 indexed benchmarks</p></li>
+            <li><time datetime="2026-05">May 2026</time><p>Harbor v0.6.5 was released for agent evaluation, task environments, and RL-ready rollout workflows</p></li>
+            <li><time datetime="2025-03">Mar 2025</time><p>Started working on LLM algorithms at ByteDance</p></li>
+          </ol>
         </section>
 
         <section class="home-section" aria-labelledby="pubs-title">
@@ -93,22 +110,26 @@
           </div>
           <div class="project-grid">
             <article class="project-card project-card-agent">
-              <a class="card-hit-area" href="https://github.com/benchflow-ai/skillsbench" aria-label="Open SkillsBench project"></a>
+              <a class="card-hit-area" href="https://www.skillsbench.ai/" aria-label="Open SkillsBench website"></a>
               <img class="project-figure" src="assets/figures/skillsbench-overview.png" alt="SkillsBench overview figure">
               <div class="project-head"><span class="project-index">01</span><span class="project-icon">S</span></div>
-              <h3><a href="https://github.com/benchflow-ai/skillsbench">SkillsBench</a></h3>
-              <p>A benchmark for testing how well reusable agent skills work across tasks, models, and environments.</p>
-              <ul class="project-points"><li>Skill reliability</li><li>Agent skill-use behavior</li><li>Cross-task evaluation</li></ul>
-              <div class="action-links"><a href="https://github.com/benchflow-ai/skillsbench">GitHub</a><a href="https://arxiv.org/abs/2602.12670">Paper</a></div>
+              <div class="project-badges"><span>Fastest to 1k stars</span><span>Qwen model card</span></div>
+              <h3><a href="https://www.skillsbench.ai/">SkillsBench</a></h3>
+              <div class="project-stats"><span>1.1k stars</span><span>86 tasks</span><span>7,308 trajectories</span></div>
+              <p>A benchmark for testing whether agent skills actually work across tasks, models, and environments.</p>
+              <ul class="project-points"><li>105 domain experts from Stanford, CMU, Berkeley, Oxford, Amazon, ByteDance, and more</li><li>11 domains and 40 indexed benchmarks</li><li>Referenced by leading model labs and recent agent-skill research</li></ul>
+              <div class="action-links"><a href="https://www.skillsbench.ai/">Website</a><a href="https://github.com/benchflow-ai/skillsbench">GitHub</a><a href="https://arxiv.org/abs/2602.12670">Paper</a></div>
             </article>
             <article class="project-card project-card-agent">
-              <a class="card-hit-area" href="https://github.com/harbor-framework/harbor" aria-label="Open Harbor project"></a>
+              <a class="card-hit-area" href="https://www.harborframework.com/" aria-label="Open Harbor website"></a>
               <img class="project-figure" src="assets/figures/harbor-site.png" alt="Harbor homepage screenshot">
               <div class="project-head"><span class="project-index">02</span><span class="project-icon">H</span></div>
-              <h3><a href="https://github.com/harbor-framework/harbor">Harbor</a></h3>
+              <div class="project-badges"><span>Agent evals</span><span>RL environments</span></div>
+              <h3><a href="https://www.harborframework.com/">Harbor</a></h3>
+              <div class="project-stats"><span>1.8k stars</span><span>993 forks</span><span>914 commits</span></div>
               <p>An evaluation and environment framework for agent tasks, rollouts, and RL-oriented data generation.</p>
-              <ul class="project-points"><li>Task environments</li><li>Rollout generation</li><li>RL-ready evaluation loops</li></ul>
-              <div class="action-links"><a href="https://github.com/harbor-framework/harbor">GitHub</a></div>
+              <ul class="project-points"><li>Unified harness for agent benchmarks and task environments</li><li>Rollout generation for inspection, auditing, and training</li><li>Designed for repeatable evaluation and optimization workflows</li></ul>
+              <div class="action-links"><a href="https://www.harborframework.com/">Website</a><a href="https://github.com/harbor-framework/harbor">GitHub</a></div>
             </article>
           </div>
           <a class="text-link" href="projects.html">View project notes</a>
