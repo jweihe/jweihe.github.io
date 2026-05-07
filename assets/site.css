@@ -471,8 +471,8 @@ nav a:hover,
 .news-list li {
   position: relative;
   display: grid;
-  grid-template-columns: 18px 96px 1fr;
-  gap: 14px 16px;
+  grid-template-columns: 20px 38px minmax(86px, max-content) 1fr;
+  gap: 14px;
   border-bottom: 1px solid var(--faint);
   padding: 15px 0 15px 16px;
   transition: background 180ms ease, transform 180ms ease;
@@ -481,9 +481,9 @@ nav a:hover,
 .news-list li::before {
   counter-increment: news;
   content: "0" counter(news);
-  position: absolute;
-  left: 44px;
-  top: 16px;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
   color: rgba(111, 73, 56, 0.55);
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 12px;
@@ -494,6 +494,8 @@ nav a:hover,
 .news-icon {
   display: inline-grid;
   place-items: center;
+  grid-column: 1;
+  grid-row: 1;
   align-self: start;
   margin-top: 2px;
   color: var(--accent);
@@ -516,7 +518,7 @@ nav a:hover,
 }
 
 .news-list p {
-  grid-column: 3;
+  grid-column: 4;
   margin: 0;
   color: var(--ink);
   font-size: 16px;
@@ -524,7 +526,7 @@ nav a:hover,
 }
 
 .news-list time {
-  grid-column: 2;
+  grid-column: 3;
 }
 
 .featured-list {
@@ -898,6 +900,52 @@ nav a:hover,
   letter-spacing: 0.08em;
 }
 
+.lab-preview-card {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid var(--faint);
+  background:
+    linear-gradient(135deg, rgba(37, 33, 29, 0.05), transparent 46%),
+    rgba(255, 255, 255, 0.24);
+  padding: 18px;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.lab-preview-card:hover {
+  border-color: var(--accent);
+  background: rgba(111, 73, 56, 0.045);
+  transform: translateX(4px);
+}
+
+.lab-glyph {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.lab-preview-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.lab-preview-card span:last-child {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
 .hero-links {
   display: flex;
   flex-wrap: wrap;
@@ -1034,6 +1082,150 @@ time {
   color: var(--muted);
   font-size: 19px;
   line-height: 1.85;
+}
+
+.lab-page {
+  max-width: 1040px;
+}
+
+.lab-page .page-header p:last-child {
+  max-width: min(100%, 650px);
+}
+
+.lab-tool {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.85fr) minmax(240px, 0.8fr) minmax(260px, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--faint);
+  padding: 34px 0;
+}
+
+.lab-tool > * {
+  min-width: 0;
+}
+
+.lab-tool-copy,
+.mixer-panel,
+.mixer-controls,
+.lab-readout {
+  border: 1px solid var(--faint);
+  background: rgba(255, 255, 255, 0.28);
+  padding: 22px;
+}
+
+.lab-tool-copy h2 {
+  margin: 12px 0 12px;
+  font-size: clamp(30px, 3.2vw, 42px);
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+.lab-tool-copy p:last-child,
+.lab-readout p {
+  max-width: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.mixer-panel {
+  display: grid;
+  gap: 24px;
+  align-content: center;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(111, 73, 56, 0.11), transparent 46%),
+    rgba(255, 255, 255, 0.26);
+}
+
+.score-orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(210px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px solid rgba(111, 73, 56, 0.3);
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--accent) var(--lab-score, 72%), rgba(111, 73, 56, 0.13) 0),
+    var(--paper);
+}
+
+.score-orbit::after {
+  content: "";
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px rgba(111, 73, 56, 0.16);
+}
+
+.score-orbit span,
+.score-orbit small {
+  position: relative;
+  z-index: 1;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.score-orbit span {
+  color: var(--ink);
+  font-size: clamp(46px, 6vw, 72px);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.score-orbit small {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.signal-bars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  height: 92px;
+  align-items: end;
+}
+
+.signal-bars span {
+  min-height: 12px;
+  height: var(--level);
+  border: 1px solid rgba(111, 73, 56, 0.24);
+  background:
+    linear-gradient(180deg, rgba(111, 73, 56, 0.72), rgba(111, 73, 56, 0.18)),
+    rgba(255, 255, 255, 0.46);
+  transition: height 180ms ease;
+}
+
+.mixer-controls {
+  display: grid;
+  gap: 17px;
+}
+
+.mixer-controls label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mixer-controls input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.lab-readout {
+  grid-column: 1 / -1;
+  border-left: 3px solid var(--accent);
 }
 
 .content-section,
@@ -1332,6 +1524,7 @@ figure img {
   .statement,
   .logo-chip,
   .home-section,
+  .lab-tool,
   .news-list li,
   .project-card,
   .pub-item {
@@ -1369,7 +1562,8 @@ figure img {
   .site-header,
   .site-footer,
   main {
-    width: min(100% - 30px, 980px);
+    width: calc(100% - 30px);
+    max-width: 980px;
   }
 
   .site-header {
@@ -1431,7 +1625,8 @@ figure img {
   .signal-strip,
   .icon-row,
   .project-grid,
-  .project-grid-page {
+  .project-grid-page,
+  .lab-tool {
     grid-template-columns: 1fr;
   }
 
@@ -1508,11 +1703,36 @@ figure img {
   }
 
   .news-list li::before {
-    left: 0;
+    grid-row: auto;
+  }
+
+  .news-icon {
+    grid-row: auto;
+    justify-content: start;
   }
 
   .project-stats-large {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lab-preview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-tool-copy,
+  .mixer-panel,
+  .mixer-controls,
+  .lab-readout {
+    padding: 18px;
+  }
+
+  .lab-page .page-header p:last-child {
+    max-width: calc(100vw - 30px);
+  }
+
+  .lab-tool-copy p:last-child,
+  .lab-readout p {
+    max-width: calc(100vw - 68px);
   }
 
   .featured-item h3,
