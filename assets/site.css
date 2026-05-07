@@ -537,6 +537,13 @@ nav a:hover,
   transform: translateX(4px);
 }
 
+.featured-item-highlight,
+.pub-item-highlight {
+  background:
+    linear-gradient(135deg, rgba(37, 33, 29, 0.045), transparent 46%),
+    rgba(255, 255, 255, 0.22);
+}
+
 .featured-item p {
   margin: 0;
   color: var(--muted);
@@ -546,8 +553,28 @@ nav a:hover,
 }
 
 .featured-item .tag,
+.featured-item .paper-badges,
 .featured-item .action-links {
   grid-column: 2;
+}
+
+.paper-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 4px 0 12px;
+}
+
+.paper-badges span {
+  border: 1px solid rgba(111, 73, 56, 0.32);
+  background: rgba(37, 33, 29, 0.88);
+  color: var(--paper);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  padding: 5px 8px;
+  text-transform: uppercase;
 }
 
 .paper-thumb {
@@ -1069,6 +1096,7 @@ time {
 .pub-item h2,
 .pub-item p,
 .pub-item .tag,
+.pub-item .paper-badges,
 .pub-item .action-links {
   grid-column: 2;
 }
@@ -1444,10 +1472,12 @@ figure img {
   .featured-item h3,
   .featured-item p,
   .featured-item .tag,
+  .featured-item .paper-badges,
   .featured-item .action-links,
   .pub-item h2,
   .pub-item p,
   .pub-item .tag,
+  .pub-item .paper-badges,
   .pub-item .action-links {
     grid-column: 1;
   }
