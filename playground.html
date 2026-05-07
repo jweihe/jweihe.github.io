@@ -9,7 +9,7 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/">Modao</a>
+    <a class="brand" href="/">jweihe</a>
     <nav aria-label="Site navigation">
       <a href="about.html">About</a>
       <a href="publications.html">Publications</a>
@@ -31,7 +31,7 @@
       <div class="toy-copy">
         <p class="kicker">Physics Sketch</p>
         <h2 id="tether-title">Tether Drop</h2>
-        <p>Drag the weight, release, then cut the tether.</p>
+        <p>Drag the weight or the star, then cut the tether.</p>
       </div>
 
       <div class="toy-stage">
@@ -53,10 +53,37 @@
         </div>
       </div>
     </section>
+
+    <section class="toy-box" aria-labelledby="elastic-title">
+      <div class="toy-copy">
+        <p class="kicker">Elastic Field</p>
+        <h2 id="elastic-title">Touch Membrane</h2>
+        <p>Drag across the grid and watch the surface carry the wave.</p>
+      </div>
+
+      <div class="toy-stage">
+        <canvas id="elasticCanvas" width="960" height="560" aria-label="Interactive elastic membrane sketch"></canvas>
+      </div>
+
+      <div class="toy-controls">
+        <label>
+          <span>Energy</span>
+          <input id="energyControl" type="range" min="20" max="160" value="92">
+        </label>
+        <label>
+          <span>Return</span>
+          <input id="returnControl" type="range" min="20" max="140" value="78">
+        </label>
+        <div class="toy-actions">
+          <button id="pulseField" type="button">Pulse</button>
+          <button id="calmField" type="button">Calm</button>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
-    <span>© Modao</span>
+    <span>© jweihe</span>
     <a href="projects.html">Projects</a>
   </footer>
 
@@ -67,7 +94,7 @@
     const tetherControl = document.querySelector("#tetherControl");
     const cutTether = document.querySelector("#cutTether");
     const resetToy = document.querySelector("#resetToy");
-    const pointer = { active: false, x: 0, y: 0, id: null };
+    const pointer = { active: false, x: 0, y: 0, id: null, mode: null };
     const target = { x: 0, y: 0, radius: 26, pulse: 0 };
     const sparks = [];
     let weight = { x: 0, y: 0, vx: 0, vy: 0, radius: 22 };
@@ -124,8 +151,8 @@
 
     function burst(x, y) {
       target.pulse = 1;
-      for (let i = 0; i < 24; i += 1) {
-        const angle = (Math.PI * 2 * i) / 24;
+      for (let i = 0; i < 36; i += 1) {
+        const angle = (Math.PI * 2 * i) / 36;
         sparks.push({
           x,
           y,
@@ -149,6 +176,13 @@
       ctx.beginPath();
       ctx.arc(0, 0, target.radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = "rgba(111, 73, 56, 0.72)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.arc(0, 0, target.radius + 9, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
       ctx.fillStyle = "#6f4938";
       ctx.beginPath();
       for (let i = 0; i < 5; i += 1) {
@@ -190,7 +224,7 @@
       ctx.fillStyle = "rgba(251, 248, 239, 0.82)";
       ctx.fillRect(0, 0, width, height);
 
-      if (pointer.active) {
+      if (pointer.active && pointer.mode === "weight") {
         const dx = pointer.x - weight.x;
         const dy = pointer.y - weight.y;
         weight.vx += dx * 0.12;
@@ -256,6 +290,12 @@
       pointer.id = event.pointerId;
       pointer.x = point.x;
       pointer.y = point.y;
+      pointer.mode = Math.hypot(point.x - target.x, point.y - target.y) < target.radius + 22 ? "target" : "weight";
+      if (pointer.mode === "target") {
+        target.x = point.x;
+        target.y = point.y;
+        target.pulse = 0.6;
+      }
       canvas.setPointerCapture(event.pointerId);
     });
     canvas.addEventListener("pointermove", (event) => {
@@ -263,14 +303,20 @@
       const point = canvasPoint(event);
       pointer.x = point.x;
       pointer.y = point.y;
+      if (pointer.mode === "target") {
+        target.x = Math.max(target.radius + 14, Math.min(width - target.radius - 14, point.x));
+        target.y = Math.max(target.radius + 14, Math.min(height - target.radius - 14, point.y));
+      }
     });
     canvas.addEventListener("pointerup", () => {
       pointer.active = false;
       pointer.id = null;
+      pointer.mode = null;
     });
     canvas.addEventListener("pointercancel", () => {
       pointer.active = false;
       pointer.id = null;
+      pointer.mode = null;
     });
     cutTether.addEventListener("click", () => {
       tethered = false;
@@ -283,6 +329,149 @@
 
     reset();
     step();
+
+    const elasticCanvas = document.querySelector("#elasticCanvas");
+    const elasticCtx = elasticCanvas.getContext("2d");
+    const energyControl = document.querySelector("#energyControl");
+    const returnControl = document.querySelector("#returnControl");
+    const pulseField = document.querySelector("#pulseField");
+    const calmField = document.querySelector("#calmField");
+    const elasticPointer = { active: false, x: 0, y: 0 };
+    let elasticWidth = 0;
+    let elasticHeight = 0;
+    let elasticDpr = 1;
+    let elasticNodes = [];
+    let elasticCols = 0;
+    let elasticRows = 0;
+    let elasticGap = 34;
+
+    function resizeElastic() {
+      const rect = elasticCanvas.getBoundingClientRect();
+      elasticDpr = Math.min(window.devicePixelRatio || 1, 2);
+      elasticWidth = Math.max(320, rect.width);
+      elasticHeight = Math.max(280, rect.height);
+      elasticCanvas.width = Math.round(elasticWidth * elasticDpr);
+      elasticCanvas.height = Math.round(elasticHeight * elasticDpr);
+      elasticCtx.setTransform(elasticDpr, 0, 0, elasticDpr, 0, 0);
+      elasticGap = elasticWidth < 520 ? 38 : 34;
+      elasticCols = Math.floor((elasticWidth - 56) / elasticGap) + 1;
+      elasticRows = Math.floor((elasticHeight - 56) / elasticGap) + 1;
+      const startX = (elasticWidth - (elasticCols - 1) * elasticGap) / 2;
+      const startY = (elasticHeight - (elasticRows - 1) * elasticGap) / 2;
+      elasticNodes = [];
+      for (let row = 0; row < elasticRows; row += 1) {
+        for (let col = 0; col < elasticCols; col += 1) {
+          const x = startX + col * elasticGap;
+          const y = startY + row * elasticGap;
+          elasticNodes.push({ x, y, ox: x, oy: y, vx: 0, vy: 0, lift: 0 });
+        }
+      }
+    }
+
+    function elasticPoint(event) {
+      const rect = elasticCanvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (elasticWidth / rect.width),
+        y: (event.clientY - rect.top) * (elasticHeight / rect.height)
+      };
+    }
+
+    function pushElastic(x, y, strength = 1) {
+      const energy = Number(energyControl.value) * strength;
+      for (const node of elasticNodes) {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        const dist = Math.max(1, Math.hypot(dx, dy));
+        if (dist > 120) continue;
+        const force = (1 - dist / 120) * energy * 0.018;
+        node.vx += (dx / dist) * force * 60;
+        node.vy += (dy / dist) * force * 60;
+        node.lift = Math.min(1, node.lift + (1 - dist / 120) * 0.85);
+      }
+    }
+
+    function calmElastic() {
+      for (const node of elasticNodes) {
+        node.x = node.ox;
+        node.y = node.oy;
+        node.vx = 0;
+        node.vy = 0;
+        node.lift = 0;
+      }
+    }
+
+    function drawElastic() {
+      elasticCtx.clearRect(0, 0, elasticWidth, elasticHeight);
+      const spring = Number(returnControl.value) / 10000;
+
+      if (elasticPointer.active) pushElastic(elasticPointer.x, elasticPointer.y, 0.5);
+
+      for (const node of elasticNodes) {
+        node.vx += (node.ox - node.x) * spring * 60;
+        node.vy += (node.oy - node.y) * spring * 60;
+        node.vx *= 0.88;
+        node.vy *= 0.88;
+        node.x += node.vx;
+        node.y += node.vy;
+        node.lift *= 0.94;
+      }
+
+      elasticCtx.lineWidth = 1;
+      for (let row = 0; row < elasticRows; row += 1) {
+        elasticCtx.beginPath();
+        for (let col = 0; col < elasticCols; col += 1) {
+          const node = elasticNodes[row * elasticCols + col];
+          if (col === 0) elasticCtx.moveTo(node.x, node.y);
+          else elasticCtx.lineTo(node.x, node.y);
+        }
+        elasticCtx.strokeStyle = "rgba(111, 73, 56, 0.18)";
+        elasticCtx.stroke();
+      }
+      for (let col = 0; col < elasticCols; col += 1) {
+        elasticCtx.beginPath();
+        for (let row = 0; row < elasticRows; row += 1) {
+          const node = elasticNodes[row * elasticCols + col];
+          if (row === 0) elasticCtx.moveTo(node.x, node.y);
+          else elasticCtx.lineTo(node.x, node.y);
+        }
+        elasticCtx.strokeStyle = "rgba(111, 73, 56, 0.13)";
+        elasticCtx.stroke();
+      }
+      for (const node of elasticNodes) {
+        elasticCtx.fillStyle = node.lift > 0.2 ? "#6f4938" : "rgba(37, 33, 29, 0.55)";
+        elasticCtx.beginPath();
+        elasticCtx.arc(node.x, node.y, 2.2 + node.lift * 3.4, 0, Math.PI * 2);
+        elasticCtx.fill();
+      }
+      requestAnimationFrame(drawElastic);
+    }
+
+    elasticCanvas.addEventListener("pointerdown", (event) => {
+      const point = elasticPoint(event);
+      elasticPointer.active = true;
+      elasticPointer.x = point.x;
+      elasticPointer.y = point.y;
+      pushElastic(point.x, point.y, 1.2);
+      elasticCanvas.setPointerCapture(event.pointerId);
+    });
+    elasticCanvas.addEventListener("pointermove", (event) => {
+      if (!elasticPointer.active) return;
+      const point = elasticPoint(event);
+      elasticPointer.x = point.x;
+      elasticPointer.y = point.y;
+    });
+    elasticCanvas.addEventListener("pointerup", () => {
+      elasticPointer.active = false;
+    });
+    elasticCanvas.addEventListener("pointercancel", () => {
+      elasticPointer.active = false;
+    });
+    pulseField.addEventListener("click", () => pushElastic(elasticWidth * 0.5, elasticHeight * 0.5, 1.8));
+    calmField.addEventListener("click", calmElastic);
+    window.addEventListener("resize", resizeElastic);
+
+    resizeElastic();
+    drawElastic();
   </script>
 </body>
 </html>
