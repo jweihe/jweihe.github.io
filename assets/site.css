@@ -247,7 +247,6 @@ nav a:hover,
   padding: 14px;
 }
 
-.logo-letter,
 .logo-badge,
 .project-icon {
   display: grid;
@@ -292,12 +291,6 @@ nav a:hover,
   border-radius: 6px;
 }
 
-.logo-ict {
-  background: linear-gradient(135deg, #6f4938, #a57a5e);
-  border-color: transparent !important;
-  color: #fff !important;
-}
-
 .logo-chip p {
   margin: 0;
   font-size: 14px;
@@ -333,6 +326,10 @@ nav a:hover,
 
 .featured-item {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(180px, 230px) 1fr;
+  column-gap: 22px;
+  align-items: start;
   border-bottom: 1px solid var(--faint);
   padding: 24px 0 24px 22px;
 }
@@ -352,6 +349,7 @@ nav a:hover,
   font-size: 23px;
   font-weight: 500;
   line-height: 1.35;
+  grid-column: 2;
 }
 
 .featured-item h3 a:hover,
@@ -364,6 +362,22 @@ nav a:hover,
   color: var(--muted);
   font-size: 16px;
   line-height: 1.75;
+  grid-column: 2;
+}
+
+.featured-item .tag,
+.featured-item .action-links {
+  grid-column: 2;
+}
+
+.paper-thumb {
+  grid-row: span 4;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border: 1px solid var(--faint);
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--paper);
 }
 
 .action-links {
@@ -405,37 +419,77 @@ nav a:hover,
   position: relative;
   overflow: hidden;
   border: 1px solid var(--faint);
-  padding: 22px;
+  padding: 18px 22px 24px;
+  background:
+    linear-gradient(135deg, rgba(111, 73, 56, 0.08), transparent 34%),
+    rgba(251, 248, 239, 0.88);
   transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
 .project-card::after {
   content: "";
   position: absolute;
-  inset: auto 18px 14px auto;
-  width: 86px;
-  height: 86px;
+  inset: auto -26px -28px auto;
+  width: 142px;
+  height: 142px;
   border: 1px solid rgba(111, 73, 56, 0.14);
   border-radius: 50%;
   pointer-events: none;
 }
 
+.project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+
 .project-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 16px 38px rgba(77, 54, 40, 0.08);
+  box-shadow: 0 18px 44px rgba(77, 54, 40, 0.11);
   transform: translateY(-2px);
 }
 
 .project-card-large {
-  min-height: 310px;
+  min-height: 430px;
+}
+
+.project-card-agent {
+  display: grid;
+  align-content: start;
+}
+
+.project-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.project-index {
+  color: rgba(111, 73, 56, 0.45);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .project-card h2,
 .project-card h3 {
-  margin: 18px 0 10px;
-  font-size: 24px;
+  margin: 0 0 12px;
+  font-size: 28px;
   font-weight: 500;
   line-height: 1.25;
+}
+
+.project-figure {
+  width: calc(100% + 44px);
+  max-width: none;
+  margin: -18px -22px 22px;
+  border-bottom: 1px solid var(--faint);
+  aspect-ratio: 2.35 / 1;
+  object-fit: cover;
 }
 
 .project-card p {
@@ -650,6 +704,13 @@ time {
   padding: 24px 0;
 }
 
+.pub-item {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  column-gap: 22px;
+  align-items: start;
+}
+
 .timeline-item:first-of-type,
 .pub-item:first-child,
 .project-item:first-child {
@@ -681,6 +742,17 @@ time {
   font-size: 23px;
   font-weight: 500;
   line-height: 1.35;
+}
+
+.pub-item h2,
+.pub-item p,
+.pub-item .tag,
+.pub-item .action-links {
+  grid-column: 2;
+}
+
+.pub-item .paper-thumb {
+  grid-row: span 6;
 }
 
 .pub-item p,
@@ -848,6 +920,27 @@ figure img {
   .post-item {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+
+  .featured-item,
+  .pub-item {
+    grid-template-columns: 1fr;
+    padding-left: 16px;
+  }
+
+  .featured-item h3,
+  .featured-item p,
+  .featured-item .tag,
+  .featured-item .action-links,
+  .pub-item h2,
+  .pub-item p,
+  .pub-item .tag,
+  .pub-item .action-links {
+    grid-column: 1;
+  }
+
+  .paper-thumb {
+    margin-bottom: 14px;
   }
 
   .blog-page .post-item {

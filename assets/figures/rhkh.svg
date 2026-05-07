@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 260" role="img" aria-labelledby="title desc">
+  <title id="title">RHKH method thumbnail</title>
+  <desc id="desc">Relational hypergraph reasoning for n-ary knowledge facts.</desc>
+  <rect width="520" height="260" fill="#fbf8ef"/>
+  <rect x="18" y="18" width="484" height="224" rx="12" fill="#f5f1e8" stroke="#cfc4b4"/>
+  <ellipse cx="176" cy="112" rx="116" ry="60" fill="#fffaf0" stroke="#6f4938" stroke-width="2"/>
+  <g fill="#fbf8ef" stroke="#6f4938" stroke-width="2">
+    <circle cx="104" cy="90" r="16"/><circle cx="158" cy="66" r="14"/><circle cx="214" cy="94" r="16"/><circle cx="142" cy="142" r="16"/><circle cx="230" cy="150" r="14"/>
+  </g>
+  <path d="M120 92 144 72M172 70 202 88M208 106 154 134M158 140 218 149M113 103 135 132" stroke="#6f4938" stroke-width="2" fill="none"/>
+  <path d="M316 94h78" stroke="#6f4938" stroke-width="2"/><path d="m386 84 12 10-12 10" fill="none" stroke="#6f4938" stroke-width="2"/>
+  <rect x="410" y="70" width="70" height="82" rx="10" fill="#fffaf0" stroke="#6f4938"/>
+  <text x="445" y="108" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#25211d">Link</text>
+  <text x="445" y="130" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#25211d">Score</text>
+  <text x="36" y="222" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#6f4938">N-ARY FACTS AS RELATIONAL HYPERGRAPHS</text>
+</svg>

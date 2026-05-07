@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 260" role="img" aria-labelledby="title desc">
+  <title id="title">ADA-GAD method thumbnail</title>
+  <desc id="desc">A graph denoising pretraining and fine-tuning pipeline.</desc>
+  <rect width="520" height="260" fill="#fbf8ef"/>
+  <rect x="18" y="18" width="484" height="224" rx="12" fill="#f5f1e8" stroke="#cfc4b4"/>
+  <g fill="none" stroke="#6f4938" stroke-width="2">
+    <circle cx="80" cy="88" r="12"/><circle cx="145" cy="62" r="10"/><circle cx="142" cy="132" r="12"/><circle cx="214" cy="96" r="11"/><circle cx="254" cy="148" r="10"/>
+    <path d="M92 84 134 66M91 94 132 126M154 128 204 101M154 63 204 93M222 105 247 140"/>
+    <circle cx="142" cy="132" r="20" stroke-dasharray="4 5"/>
+  </g>
+  <path d="M292 104h64" stroke="#6f4938" stroke-width="2"/><path d="m348 94 12 10-12 10" fill="none" stroke="#6f4938" stroke-width="2"/>
+  <rect x="376" y="56" width="98" height="58" rx="8" fill="#fffaf0" stroke="#6f4938"/>
+  <rect x="376" y="142" width="98" height="58" rx="8" fill="#fffaf0" stroke="#6f4938"/>
+  <text x="425" y="90" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#25211d">Denoise</text>
+  <text x="425" y="176" text-anchor="middle" font-family="Georgia, serif" font-size="15" fill="#25211d">Fine-tune</text>
+  <text x="36" y="222" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#6f4938">NOISY GRAPH -> ANOMALY-DENOISED REPRESENTATION</text>
+</svg>

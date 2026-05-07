@@ -42,18 +42,10 @@
           </div>
         </section>
 
-        <section class="signal-strip" aria-label="Profile highlights">
-          <div><strong>7</strong><span>Scholar papers</span></div>
-          <div><strong>100+</strong><span>citations</span></div>
-          <div><strong>3</strong><span>CCF-A works</span></div>
-          <div><strong>2</strong><span>agent projects</span></div>
-        </section>
-
         <section class="icon-row" aria-label="Experience">
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/bytedance.svg" alt="ByteDance logo"></span><p>ByteDance<br><small>LLM algorithms</small></p></div>
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/alibaba.svg" alt="Alibaba logo"></span><p>Alibaba Token Hub<br><small>multimodal LLMs</small></p></div>
           <div class="logo-chip"><span class="logo-img logo-wide"><img src="assets/logos/tencent.svg" alt="Tencent logo"></span><p>Tencent ARC Lab<br><small>document understanding</small></p></div>
-          <div class="logo-chip"><span class="logo-letter logo-ict">ICT</span><p>CAS ICT<br><small>graph learning</small></p></div>
         </section>
 
         <section class="home-section" aria-labelledby="pubs-title">
@@ -63,24 +55,28 @@
           </div>
           <div class="featured-list">
             <article class="featured-item">
+              <img class="paper-thumb" src="assets/figures/ada-gad.svg" alt="ADA-GAD method diagram">
               <span class="tag">AAAI 2024 · CCF A · 99 citations</span>
               <h3><a href="https://doi.org/10.1609/aaai.v38i8.28691">Ada-gad: Anomaly-denoised autoencoders for graph anomaly detection</a></h3>
               <p>Introduces an anomaly-denoised pretraining and fine-tuning framework for graph anomaly detection, addressing anomaly overfitting and homophily traps. The method has become a strong baseline for graph anomaly detection.</p>
               <div class="action-links"><a href="https://doi.org/10.1609/aaai.v38i8.28691">Paper</a><a href="https://github.com/jweihe/ADA-GAD">Code</a><a href="https://scholar.google.com/citations?user=gjLPqSQAAAAJ&hl=en">Scholar</a></div>
             </article>
             <article class="featured-item">
+              <img class="paper-thumb" src="assets/figures/hgoe.svg" alt="HGOE method diagram">
               <span class="tag">ACM MM 2024 · CCF A</span>
               <h3><a href="https://doi.org/10.1145/3664647.3681118">HGOE: Hybrid External and Internal Graph Outlier Exposure</a></h3>
               <p>Studies graph out-of-distribution detection with hybrid synthetic and internal outlier exposure, improving robustness when abnormal patterns are scarce or shift across graphs.</p>
               <div class="action-links"><a href="https://doi.org/10.1145/3664647.3681118">Paper</a><a href="https://arxiv.org/abs/2407.21742">arXiv</a></div>
             </article>
             <article class="featured-item">
+              <img class="paper-thumb" src="assets/figures/rhkh.svg" alt="RHKH method diagram">
               <span class="tag">ACM MM 2024 · CCF A</span>
               <h3><a href="https://doi.org/10.1145/3664647.3681706">RHKH: Relational Hypergraph Neural Network for N-ary Knowledge Hypergraphs</a></h3>
               <p>Models n-ary relational facts as hypergraphs for knowledge reasoning, moving beyond binary triples and capturing richer relational structures.</p>
               <div class="action-links"><a href="https://doi.org/10.1145/3664647.3681706">Paper</a><a href="https://openreview.net/forum?id=8iKQctHLL7">OpenReview</a></div>
             </article>
             <article class="featured-item">
+              <img class="paper-thumb" src="assets/figures/skillsbench.svg" alt="SkillsBench evaluation diagram">
               <span class="tag">arXiv 2026</span>
               <h3><a href="https://arxiv.org/abs/2602.12670">SkillsBench: Benchmarking how well agent skills work across diverse tasks</a></h3>
               <p>A benchmark for evaluating agent skills across diverse tasks, separating whether a skill is useful from whether an agent can use it effectively.</p>
@@ -96,15 +92,17 @@
             <h2 id="projects-title">Projects</h2>
           </div>
           <div class="project-grid">
-            <article class="project-card">
-              <span class="project-icon">S</span>
+            <article class="project-card project-card-agent">
+              <img class="project-figure" src="assets/figures/skillsbench.svg" alt="SkillsBench evaluation loop">
+              <div class="project-head"><span class="project-index">01</span><span class="project-icon">S</span></div>
               <h3><a href="https://github.com/benchflow-ai/skillsbench">SkillsBench</a></h3>
               <p>A benchmark for testing how well reusable agent skills work across tasks, models, and environments.</p>
               <ul class="project-points"><li>Skill reliability</li><li>Agent skill-use behavior</li><li>Cross-task evaluation</li></ul>
               <div class="action-links"><a href="https://github.com/benchflow-ai/skillsbench">GitHub</a><a href="https://arxiv.org/abs/2602.12670">Paper</a></div>
             </article>
-            <article class="project-card">
-              <span class="project-icon">H</span>
+            <article class="project-card project-card-agent">
+              <img class="project-figure" src="assets/figures/harbor.svg" alt="Harbor rollout pipeline">
+              <div class="project-head"><span class="project-index">02</span><span class="project-icon">H</span></div>
               <h3><a href="https://github.com/harbor-framework/harbor">Harbor</a></h3>
               <p>An evaluation and environment framework for agent tasks, rollouts, and RL-oriented data generation.</p>
               <ul class="project-points"><li>Task environments</li><li>Rollout generation</li><li>RL-ready evaluation loops</li></ul>

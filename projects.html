@@ -27,16 +27,18 @@
     </header>
 
     <section class="project-grid project-grid-page">
-      <article class="project-card project-card-large">
-        <span class="project-icon">S</span>
+      <article class="project-card project-card-large project-card-agent">
+        <img class="project-figure" src="assets/figures/skillsbench.svg" alt="SkillsBench evaluation loop">
+        <div class="project-head"><span class="project-index">01</span><span class="project-icon">S</span></div>
         <h2><a href="https://github.com/benchflow-ai/skillsbench">SkillsBench</a></h2>
         <p>SkillsBench evaluates how well reusable agent skills work across diverse tasks. It helps separate two questions that are often conflated: whether a skill implementation is useful, and whether an agent can discover and apply it correctly.</p>
         <ul class="project-points"><li>Benchmarks skills as reusable tools rather than only end-to-end model outputs.</li><li>Separates skill quality from the agent’s ability to select and use the skill.</li><li>Designed for comparing agents across heterogeneous task families.</li></ul>
         <p class="project-meta">Agent evaluation · skill use · benchmark design</p>
         <div class="action-links"><a href="https://github.com/benchflow-ai/skillsbench">GitHub</a><a href="https://arxiv.org/abs/2602.12670">Paper</a></div>
       </article>
-      <article class="project-card project-card-large">
-        <span class="project-icon">H</span>
+      <article class="project-card project-card-large project-card-agent">
+        <img class="project-figure" src="assets/figures/harbor.svg" alt="Harbor rollout pipeline">
+        <div class="project-head"><span class="project-index">02</span><span class="project-icon">H</span></div>
         <h2><a href="https://github.com/harbor-framework/harbor">Harbor</a></h2>
         <p>Harbor is a framework for running agent evaluations, creating task environments, and generating rollouts for RL-oriented optimization. It is designed for repeatable experiments and practical infrastructure around agent training.</p>
         <ul class="project-points"><li>Runs agent tasks through reproducible environments and evaluation configs.</li><li>Produces rollouts that can be inspected, audited, and reused for training.</li><li>Bridges benchmark execution and RL-style optimization workflows.</li></ul>
