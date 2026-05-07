@@ -303,7 +303,7 @@ nav a:hover,
 
 .icon-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -367,15 +367,41 @@ nav a:hover,
 }
 
 .logo-chip p {
+  display: grid;
+  gap: 2px;
   margin: 0;
   font-size: 14px;
   line-height: 1.35;
+  min-width: 0;
 }
 
 .logo-chip small {
   color: var(--muted);
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .icon-row {
+    grid-template-columns: 1fr;
+  }
+
+  .logo-chip {
+    padding: 12px 14px;
+  }
+
+  .logo-chip p {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .logo-chip small {
+    text-align: right;
+    white-space: nowrap;
+  }
 }
 
 .home-section {
@@ -623,17 +649,20 @@ nav a:hover,
 }
 
 .card-hit-area {
+  display: block;
   position: absolute;
   inset: 0;
   z-index: 2;
   cursor: pointer;
 }
 
+.featured-item > :not(.card-hit-area),
 .project-card > :not(.card-hit-area) {
   position: relative;
   z-index: 1;
 }
 
+.featured-item .action-links,
 .project-card .action-links {
   position: relative;
   z-index: 3;
