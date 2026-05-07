@@ -376,8 +376,10 @@ nav a:hover,
   aspect-ratio: 2 / 1;
   border: 1px solid var(--faint);
   border-radius: 6px;
-  object-fit: cover;
+  box-sizing: border-box;
+  object-fit: contain;
   object-position: center top;
+  padding: 5px;
   background: var(--paper);
 }
 
@@ -450,6 +452,23 @@ nav a:hover,
   border-color: var(--accent);
   box-shadow: 0 18px 44px rgba(77, 54, 40, 0.11);
   transform: translateY(-2px);
+}
+
+.card-hit-area {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.project-card > :not(.card-hit-area) {
+  position: relative;
+  z-index: 1;
+}
+
+.project-card .action-links {
+  position: relative;
+  z-index: 3;
 }
 
 .project-card-large {
