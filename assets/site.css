@@ -913,6 +913,98 @@ nav a:hover,
   letter-spacing: 0.08em;
 }
 
+.collab-panel,
+.visitor-map-section {
+  border-top: 1px solid var(--faint);
+  padding: 34px 0;
+}
+
+.collab-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1fr);
+  gap: 18px 32px;
+  align-items: start;
+}
+
+.collab-panel .kicker {
+  grid-column: 1 / -1;
+}
+
+.collab-panel h2 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+.collab-panel p:not(.kicker) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.collab-mail {
+  width: fit-content;
+  border-bottom: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding-bottom: 3px;
+}
+
+.visitor-map-section {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.64fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  border-bottom: 1px solid var(--faint);
+}
+
+.visitor-map-section h2 {
+  margin: 8px 0 12px;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 500;
+  line-height: 1.16;
+}
+
+.visitor-map-section p:not(.kicker) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.visitor-map-widget {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  overflow: hidden;
+  border: 1px solid var(--faint);
+  background:
+    linear-gradient(135deg, rgba(37, 33, 29, 0.05), transparent 48%),
+    rgba(255, 255, 255, 0.28);
+  padding: 18px;
+}
+
+.visitor-map-loading {
+  color: var(--muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.visitor-map-widget iframe,
+.visitor-map-widget img,
+.visitor-map-widget object,
+.visitor-map-widget embed {
+  max-width: 100%;
+}
+
 .hero-links {
   display: flex;
   flex-wrap: wrap;
@@ -1570,7 +1662,9 @@ figure img {
   .icon-row,
   .project-grid,
   .project-grid-page,
-  .toy-box {
+  .toy-box,
+  .collab-panel,
+  .visitor-map-section {
     grid-template-columns: 1fr;
   }
 
@@ -1689,6 +1783,11 @@ figure img {
 
   .toy-stage {
     grid-row: auto;
+  }
+
+  .visitor-map-widget {
+    min-height: 220px;
+    padding: 12px;
   }
 
   .featured-item h3,
