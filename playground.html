@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playground</title>
+  <meta name="description" content="Small interactive sketches and experiments.">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/">Modao</a>
+    <nav aria-label="Site navigation">
+      <a href="about.html">About</a>
+      <a href="publications.html">Publications</a>
+      <a href="projects.html">Projects</a>
+      <a href="playground.html">Playground</a>
+      <a href="blog.html">Writing</a>
+      <a href="notes.html">Notes</a>
+    </nav>
+  </header>
+
+  <main class="page playground-page">
+    <header class="page-header">
+      <p class="kicker">Playground</p>
+      <h1>Small Strange Things</h1>
+      <p>Interactive sketches, visual toys, and small experiments.</p>
+    </header>
+
+    <section class="toy-box" aria-labelledby="orbit-title">
+      <div class="toy-copy">
+        <p class="kicker">Physics Sketch</p>
+        <h2 id="orbit-title">Orbit Sandbox</h2>
+        <p>Drag inside the field. Tap to add a body.</p>
+      </div>
+
+      <div class="toy-stage">
+        <canvas id="orbitCanvas" width="960" height="560" aria-label="Interactive orbit sandbox"></canvas>
+      </div>
+
+      <div class="toy-controls">
+        <label>
+          <span>Gravity</span>
+          <input id="gravityControl" type="range" min="20" max="160" value="78">
+        </label>
+        <label>
+          <span>Trail</span>
+          <input id="trailControl" type="range" min="8" max="42" value="24">
+        </label>
+        <div class="toy-actions">
+          <button id="addBody" type="button">Add</button>
+          <button id="resetBodies" type="button">Reset</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© Modao</span>
+    <a href="projects.html">Projects</a>
+  </footer>
+
+  <script>
+    const canvas = document.querySelector("#orbitCanvas");
+    const ctx = canvas.getContext("2d");
+    const gravityControl = document.querySelector("#gravityControl");
+    const trailControl = document.querySelector("#trailControl");
+    const addBody = document.querySelector("#addBody");
+    const resetBodies = document.querySelector("#resetBodies");
+    const pointer = { active: false, x: 0, y: 0 };
+    let bodies = [];
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.max(320, rect.width);
+      height = Math.max(280, rect.height);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function createBody(index, x, y) {
+      const angle = index * 1.72;
+      const speed = 0.9 + (index % 4) * 0.24;
+      return {
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 8 + (index % 5) * 2.4,
+        mass: 0.8 + (index % 5) * 0.22,
+        hue: 18 + index * 23
+      };
+    }
+
+    function reset() {
+      resizeCanvas();
+      bodies = [];
+      const cx = width * 0.5;
+      const cy = height * 0.5;
+      for (let i = 0; i < 18; i += 1) {
+        const ring = 54 + (i % 6) * 24;
+        const angle = i * 0.88;
+        bodies.push(createBody(i, cx + Math.cos(angle) * ring, cy + Math.sin(angle) * ring));
+      }
+    }
+
+    function addAt(x = width * (0.24 + Math.random() * 0.52), y = height * (0.24 + Math.random() * 0.52)) {
+      bodies.push(createBody(bodies.length + 1, x, y));
+      if (bodies.length > 36) bodies.shift();
+    }
+
+    function canvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (width / rect.width),
+        y: (event.clientY - rect.top) * (height / rect.height)
+      };
+    }
+
+    function step() {
+      const gravity = Number(gravityControl.value) / 1000;
+      const trail = Number(trailControl.value) / 100;
+      ctx.fillStyle = `rgba(251, 248, 239, ${1 - trail})`;
+      ctx.fillRect(0, 0, width, height);
+
+      const attractor = pointer.active
+        ? pointer
+        : { x: width * 0.5 + Math.cos(performance.now() / 1700) * width * 0.18, y: height * 0.5 + Math.sin(performance.now() / 2100) * height * 0.18 };
+
+      ctx.strokeStyle = "rgba(111, 73, 56, 0.12)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(attractor.x, attractor.y, 34, 0, Math.PI * 2);
+      ctx.stroke();
+
+      for (const body of bodies) {
+        const dx = attractor.x - body.x;
+        const dy = attractor.y - body.y;
+        const distSq = Math.max(dx * dx + dy * dy, 900);
+        const force = gravity * 1200 * body.mass / distSq;
+        body.vx += dx * force;
+        body.vy += dy * force;
+        body.vx *= 0.992;
+        body.vy *= 0.992;
+        body.x += body.vx;
+        body.y += body.vy;
+
+        if (body.x < body.radius || body.x > width - body.radius) {
+          body.vx *= -0.82;
+          body.x = Math.max(body.radius, Math.min(width - body.radius, body.x));
+        }
+        if (body.y < body.radius || body.y > height - body.radius) {
+          body.vy *= -0.82;
+          body.y = Math.max(body.radius, Math.min(height - body.radius, body.y));
+        }
+
+        ctx.beginPath();
+        ctx.fillStyle = `hsl(${body.hue}, 42%, 34%)`;
+        ctx.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    canvas.addEventListener("pointerdown", (event) => {
+      const point = canvasPoint(event);
+      pointer.active = true;
+      pointer.x = point.x;
+      pointer.y = point.y;
+      addAt(point.x, point.y);
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!pointer.active) return;
+      const point = canvasPoint(event);
+      pointer.x = point.x;
+      pointer.y = point.y;
+    });
+    canvas.addEventListener("pointerup", () => {
+      pointer.active = false;
+    });
+    canvas.addEventListener("pointercancel", () => {
+      pointer.active = false;
+    });
+    addBody.addEventListener("click", () => addAt());
+    resetBodies.addEventListener("click", reset);
+    window.addEventListener("resize", reset);
+
+    reset();
+    step();
+  </script>
+</body>
+</html>

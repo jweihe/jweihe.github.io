@@ -900,52 +900,6 @@ nav a:hover,
   letter-spacing: 0.08em;
 }
 
-.lab-preview-card {
-  display: grid;
-  grid-template-columns: 58px 1fr;
-  gap: 16px;
-  align-items: center;
-  border: 1px solid var(--faint);
-  background:
-    linear-gradient(135deg, rgba(37, 33, 29, 0.05), transparent 46%),
-    rgba(255, 255, 255, 0.24);
-  padding: 18px;
-  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
-}
-
-.lab-preview-card:hover {
-  border-color: var(--accent);
-  background: rgba(111, 73, 56, 0.045);
-  transform: translateX(4px);
-}
-
-.lab-glyph {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--accent);
-  border-radius: 50%;
-  color: var(--accent);
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-}
-
-.lab-preview-card strong {
-  display: block;
-  margin-bottom: 5px;
-  color: var(--ink);
-  font-size: 20px;
-  font-weight: 500;
-}
-
-.lab-preview-card span:last-child {
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.7;
-}
-
 .hero-links {
   display: flex;
   flex-wrap: wrap;
@@ -1084,130 +1038,85 @@ time {
   line-height: 1.85;
 }
 
-.lab-page {
+.playground-page {
   max-width: 1040px;
 }
 
-.lab-page .page-header p:last-child {
-  max-width: min(100%, 650px);
-}
-
-.lab-tool {
+.toy-box {
   display: grid;
-  grid-template-columns: minmax(230px, 0.85fr) minmax(240px, 0.8fr) minmax(260px, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(230px, 0.7fr) minmax(0, 1.4fr);
+  gap: 18px;
   align-items: stretch;
   border-bottom: 1px solid var(--faint);
   padding: 34px 0;
 }
 
-.lab-tool > * {
+.toy-box > * {
   min-width: 0;
 }
 
-.lab-tool-copy,
-.mixer-panel,
-.mixer-controls,
-.lab-readout {
+.toy-copy,
+.toy-stage,
+.toy-controls {
   border: 1px solid var(--faint);
   background: rgba(255, 255, 255, 0.28);
+}
+
+.toy-copy {
   padding: 22px;
 }
 
-.lab-tool-copy h2 {
+.toy-copy h2 {
   margin: 12px 0 12px;
-  font-size: clamp(30px, 3.2vw, 42px);
+  font-size: clamp(32px, 4vw, 54px);
   font-weight: 500;
-  line-height: 1.12;
+  line-height: 1.06;
 }
 
-.lab-tool-copy p:last-child,
-.lab-readout p {
-  max-width: 100%;
+.toy-copy p:last-child {
   margin: 0;
   color: var(--muted);
   font-size: 17px;
   line-height: 1.8;
 }
 
-.mixer-panel {
-  display: grid;
-  gap: 24px;
-  align-content: center;
-  background:
-    radial-gradient(circle at 50% 36%, rgba(111, 73, 56, 0.11), transparent 46%),
-    rgba(255, 255, 255, 0.26);
-}
-
-.score-orbit {
+.toy-stage {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: min(210px, 100%);
-  aspect-ratio: 1;
-  margin: 0 auto;
-  border: 1px solid rgba(111, 73, 56, 0.3);
-  border-radius: 50%;
+  overflow: hidden;
+  min-height: 430px;
+  grid-row: span 2;
   background:
-    conic-gradient(var(--accent) var(--lab-score, 72%), rgba(111, 73, 56, 0.13) 0),
-    var(--paper);
+    linear-gradient(90deg, rgba(37, 33, 29, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(37, 33, 29, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, rgba(111, 73, 56, 0.09), transparent 42%),
+    rgba(255, 255, 255, 0.25);
+  background-size: 38px 38px, 38px 38px, auto, auto;
 }
 
-.score-orbit::after {
+.toy-stage::after {
   content: "";
   position: absolute;
-  inset: 13px;
-  border-radius: 50%;
-  background: var(--paper);
-  box-shadow: inset 0 0 0 1px rgba(111, 73, 56, 0.16);
+  inset: 14px;
+  border: 1px solid rgba(111, 73, 56, 0.18);
+  pointer-events: none;
 }
 
-.score-orbit span,
-.score-orbit small {
-  position: relative;
-  z-index: 1;
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+.toy-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 430px;
+  cursor: crosshair;
+  touch-action: none;
 }
 
-.score-orbit span {
-  color: var(--ink);
-  font-size: clamp(46px, 6vw, 72px);
-  font-weight: 850;
-  line-height: 1;
-}
-
-.score-orbit small {
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.signal-bars {
+.toy-controls {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  height: 92px;
-  align-items: end;
+  gap: 16px;
+  padding: 22px;
 }
 
-.signal-bars span {
-  min-height: 12px;
-  height: var(--level);
-  border: 1px solid rgba(111, 73, 56, 0.24);
-  background:
-    linear-gradient(180deg, rgba(111, 73, 56, 0.72), rgba(111, 73, 56, 0.18)),
-    rgba(255, 255, 255, 0.46);
-  transition: height 180ms ease;
-}
-
-.mixer-controls {
-  display: grid;
-  gap: 17px;
-}
-
-.mixer-controls label {
+.toy-controls label {
   display: grid;
   gap: 8px;
   color: var(--ink);
@@ -1218,14 +1127,35 @@ time {
   text-transform: uppercase;
 }
 
-.mixer-controls input {
+.toy-controls input {
   width: 100%;
   accent-color: var(--accent);
 }
 
-.lab-readout {
-  grid-column: 1 / -1;
-  border-left: 3px solid var(--accent);
+.toy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toy-actions button {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  padding: 9px 12px;
+  text-transform: uppercase;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.toy-actions button:hover {
+  background: var(--accent);
+  color: var(--paper);
+  transform: translateY(-1px);
 }
 
 .content-section,
@@ -1524,7 +1454,7 @@ figure img {
   .statement,
   .logo-chip,
   .home-section,
-  .lab-tool,
+  .toy-box,
   .news-list li,
   .project-card,
   .pub-item {
@@ -1575,9 +1505,10 @@ figure img {
 
   nav {
     justify-content: flex-start;
-    width: auto;
+    width: 100%;
     max-width: 100%;
-    gap: 8px 14px;
+    gap: 8px 12px;
+    font-size: 13px;
   }
 
   .hero {
@@ -1626,7 +1557,7 @@ figure img {
   .icon-row,
   .project-grid,
   .project-grid-page,
-  .lab-tool {
+  .toy-box {
     grid-template-columns: 1fr;
   }
 
@@ -1675,6 +1606,10 @@ figure img {
     font-size: 17px;
   }
 
+  .page-header p:last-child {
+    max-width: 330px;
+  }
+
   .writing {
     padding: 58px 0 78px;
   }
@@ -1715,24 +1650,18 @@ figure img {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .lab-preview-card {
-    grid-template-columns: 1fr;
-  }
-
-  .lab-tool-copy,
-  .mixer-panel,
-  .mixer-controls,
-  .lab-readout {
+  .toy-copy,
+  .toy-controls {
     padding: 18px;
   }
 
-  .lab-page .page-header p:last-child {
-    max-width: calc(100vw - 30px);
+  .toy-stage,
+  .toy-stage canvas {
+    min-height: 360px;
   }
 
-  .lab-tool-copy p:last-child,
-  .lab-readout p {
-    max-width: calc(100vw - 68px);
+  .toy-stage {
+    grid-row: auto;
   }
 
   .featured-item h3,
