@@ -1110,6 +1110,131 @@ figure img {
   box-shadow: 0 18px 50px rgba(55, 42, 30, 0.13);
 }
 
+.ink-theme {
+  --bg: #f7f5ef;
+  --paper: #fbfaf5;
+  --ink: #1f211f;
+  --muted: #6d716b;
+  --faint: #d9d6cb;
+  --accent: #2f3f36;
+  --accent-soft: #e7ece6;
+  background:
+    radial-gradient(ellipse at 16% 8%, rgba(47, 63, 54, 0.11), transparent 34%),
+    radial-gradient(ellipse at 90% 18%, rgba(47, 63, 54, 0.08), transparent 32%),
+    linear-gradient(180deg, #fbfaf5 0%, #f4f2ec 100%);
+}
+
+.ink-theme::before {
+  background:
+    linear-gradient(90deg, rgba(31, 33, 31, 0.025), transparent 20%, transparent 80%, rgba(31, 33, 31, 0.025)),
+    repeating-linear-gradient(90deg, rgba(31, 33, 31, 0.018) 0, rgba(31, 33, 31, 0.018) 1px, transparent 1px, transparent 36px);
+}
+
+.ink-theme .site-header,
+.ink-theme .site-footer {
+  border-color: rgba(47, 63, 54, 0.22);
+}
+
+.ink-theme .page-header,
+.ink-theme .article-header {
+  position: relative;
+}
+
+.ink-theme .page-header::after,
+.ink-theme .article-header::after {
+  content: "";
+  display: block;
+  width: min(220px, 48vw);
+  height: 12px;
+  margin-top: 28px;
+  background: linear-gradient(90deg, rgba(47, 63, 54, 0.52), rgba(47, 63, 54, 0.12), transparent);
+  border-radius: 999px;
+  filter: blur(0.3px);
+}
+
+.ink-theme .article-header::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ink-theme .blog-page .post-item {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-top: 1px solid rgba(47, 63, 54, 0.22);
+  border-bottom: 1px solid rgba(47, 63, 54, 0.22);
+  background: rgba(255, 255, 250, 0.42);
+  box-shadow: none;
+}
+
+.ink-theme .blog-page .post-item::before {
+  content: "";
+  position: absolute;
+  inset: 18px auto 18px 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(47, 63, 54, 0.7), transparent);
+}
+
+.ink-theme .post-image {
+  border-radius: 2px;
+  background: rgba(47, 63, 54, 0.12);
+  filter: saturate(0.74) contrast(1.04);
+}
+
+.ink-theme .post-image img {
+  mix-blend-mode: multiply;
+}
+
+.ink-theme .post-copy h3,
+.ink-theme .article-header h1,
+.ink-theme .article h2 {
+  color: #1f211f;
+}
+
+.ink-theme .article {
+  max-width: 800px;
+}
+
+.ink-theme .article p {
+  color: #242722;
+  font-size: 20px;
+  line-height: 2.18;
+}
+
+.ink-theme .article h2 {
+  position: relative;
+  margin-top: 64px;
+  padding-left: 18px;
+  font-size: 30px;
+}
+
+.ink-theme .article h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.26em;
+  width: 5px;
+  height: 1.1em;
+  background: linear-gradient(180deg, rgba(47, 63, 54, 0.92), rgba(47, 63, 54, 0.16));
+  border-radius: 999px;
+}
+
+.ink-theme figure {
+  width: min(520px, 100%);
+}
+
+.ink-theme figure img {
+  border-radius: 2px;
+  filter: saturate(0.68) contrast(1.08);
+  box-shadow: 0 22px 70px rgba(31, 33, 31, 0.12);
+}
+
+.ink-theme .text-link,
+.ink-theme .kicker,
+.ink-theme time {
+  color: var(--accent);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .identity-panel,
   .statement,
