@@ -27,15 +27,15 @@
       <p>Interactive sketches, visual toys, and small experiments.</p>
     </header>
 
-    <section class="toy-box" aria-labelledby="orbit-title">
+    <section class="toy-box" aria-labelledby="tether-title">
       <div class="toy-copy">
         <p class="kicker">Physics Sketch</p>
-        <h2 id="orbit-title">Orbit Sandbox</h2>
-        <p>Drag inside the field. Tap to add a body.</p>
+        <h2 id="tether-title">Tether Drop</h2>
+        <p>Drag the weight, release, then cut the tether.</p>
       </div>
 
       <div class="toy-stage">
-        <canvas id="orbitCanvas" width="960" height="560" aria-label="Interactive orbit sandbox"></canvas>
+        <canvas id="tetherCanvas" width="960" height="560" aria-label="Interactive tether physics sketch"></canvas>
       </div>
 
       <div class="toy-controls">
@@ -44,12 +44,12 @@
           <input id="gravityControl" type="range" min="20" max="160" value="78">
         </label>
         <label>
-          <span>Trail</span>
-          <input id="trailControl" type="range" min="8" max="42" value="24">
+          <span>Tether</span>
+          <input id="tetherControl" type="range" min="110" max="260" value="180">
         </label>
         <div class="toy-actions">
-          <button id="addBody" type="button">Add</button>
-          <button id="resetBodies" type="button">Reset</button>
+          <button id="cutTether" type="button">Cut</button>
+          <button id="resetToy" type="button">Reset</button>
         </div>
       </div>
     </section>
@@ -61,17 +61,22 @@
   </footer>
 
   <script>
-    const canvas = document.querySelector("#orbitCanvas");
+    const canvas = document.querySelector("#tetherCanvas");
     const ctx = canvas.getContext("2d");
     const gravityControl = document.querySelector("#gravityControl");
-    const trailControl = document.querySelector("#trailControl");
-    const addBody = document.querySelector("#addBody");
-    const resetBodies = document.querySelector("#resetBodies");
-    const pointer = { active: false, x: 0, y: 0 };
-    let bodies = [];
+    const tetherControl = document.querySelector("#tetherControl");
+    const cutTether = document.querySelector("#cutTether");
+    const resetToy = document.querySelector("#resetToy");
+    const pointer = { active: false, x: 0, y: 0, id: null };
+    const target = { x: 0, y: 0, radius: 26, pulse: 0 };
+    const sparks = [];
+    let weight = { x: 0, y: 0, vx: 0, vy: 0, radius: 22 };
+    let anchor = { x: 0, y: 0 };
+    let tethered = true;
     let width = 0;
     let height = 0;
     let dpr = 1;
+    let lastTime = performance.now();
 
     function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
@@ -83,35 +88,16 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    function createBody(index, x, y) {
-      const angle = index * 1.72;
-      const speed = 0.9 + (index % 4) * 0.24;
-      return {
-        x,
-        y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        radius: 8 + (index % 5) * 2.4,
-        mass: 0.8 + (index % 5) * 0.22,
-        hue: 18 + index * 23
-      };
-    }
-
     function reset() {
       resizeCanvas();
-      bodies = [];
-      const cx = width * 0.5;
-      const cy = height * 0.5;
-      for (let i = 0; i < 18; i += 1) {
-        const ring = 54 + (i % 6) * 24;
-        const angle = i * 0.88;
-        bodies.push(createBody(i, cx + Math.cos(angle) * ring, cy + Math.sin(angle) * ring));
-      }
-    }
-
-    function addAt(x = width * (0.24 + Math.random() * 0.52), y = height * (0.24 + Math.random() * 0.52)) {
-      bodies.push(createBody(bodies.length + 1, x, y));
-      if (bodies.length > 36) bodies.shift();
+      anchor = { x: width * 0.46, y: height * 0.16 };
+      weight = { x: anchor.x + Number(tetherControl.value) * 0.48, y: anchor.y + Number(tetherControl.value) * 0.74, vx: -1.8, vy: 0, radius: 22 };
+      target.x = width * 0.74;
+      target.y = height * 0.72;
+      target.pulse = 0;
+      sparks.length = 0;
+      tethered = true;
+      lastTime = performance.now();
     }
 
     function canvasPoint(event) {
@@ -122,48 +108,144 @@
       };
     }
 
+    function keepOnTether() {
+      const length = Number(tetherControl.value);
+      const dx = weight.x - anchor.x;
+      const dy = weight.y - anchor.y;
+      const distance = Math.max(1, Math.hypot(dx, dy));
+      const nx = dx / distance;
+      const ny = dy / distance;
+      weight.x = anchor.x + nx * length;
+      weight.y = anchor.y + ny * length;
+      const radialVelocity = weight.vx * nx + weight.vy * ny;
+      weight.vx -= radialVelocity * nx;
+      weight.vy -= radialVelocity * ny;
+    }
+
+    function burst(x, y) {
+      target.pulse = 1;
+      for (let i = 0; i < 24; i += 1) {
+        const angle = (Math.PI * 2 * i) / 24;
+        sparks.push({
+          x,
+          y,
+          vx: Math.cos(angle) * (1.8 + Math.random() * 1.8),
+          vy: Math.sin(angle) * (1.8 + Math.random() * 1.8),
+          life: 1
+        });
+      }
+    }
+
+    function drawTarget() {
+      const pulse = target.pulse * 12;
+      ctx.save();
+      ctx.translate(target.x, target.y);
+      ctx.strokeStyle = "rgba(111, 73, 56, 0.34)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, target.radius + pulse, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(111, 73, 56, 0.11)";
+      ctx.beginPath();
+      ctx.arc(0, 0, target.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#6f4938";
+      ctx.beginPath();
+      for (let i = 0; i < 5; i += 1) {
+        const outer = -Math.PI / 2 + i * (Math.PI * 2 / 5);
+        const inner = outer + Math.PI / 5;
+        ctx.lineTo(Math.cos(outer) * 16, Math.sin(outer) * 16);
+        ctx.lineTo(Math.cos(inner) * 7, Math.sin(inner) * 7);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawSparks(delta) {
+      for (let i = sparks.length - 1; i >= 0; i -= 1) {
+        const spark = sparks[i];
+        spark.life -= delta * 1.8;
+        spark.x += spark.vx * delta * 60;
+        spark.y += spark.vy * delta * 60;
+        if (spark.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = spark.life;
+        ctx.fillStyle = "#6f4938";
+        ctx.beginPath();
+        ctx.arc(spark.x, spark.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
     function step() {
-      const gravity = Number(gravityControl.value) / 1000;
-      const trail = Number(trailControl.value) / 100;
-      ctx.fillStyle = `rgba(251, 248, 239, ${1 - trail})`;
+      const now = performance.now();
+      const delta = Math.min(0.032, (now - lastTime) / 1000);
+      lastTime = now;
+      const gravity = Number(gravityControl.value) * 5.4;
+
+      ctx.fillStyle = "rgba(251, 248, 239, 0.82)";
       ctx.fillRect(0, 0, width, height);
 
-      const attractor = pointer.active
-        ? pointer
-        : { x: width * 0.5 + Math.cos(performance.now() / 1700) * width * 0.18, y: height * 0.5 + Math.sin(performance.now() / 2100) * height * 0.18 };
-
-      ctx.strokeStyle = "rgba(111, 73, 56, 0.12)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(attractor.x, attractor.y, 34, 0, Math.PI * 2);
-      ctx.stroke();
-
-      for (const body of bodies) {
-        const dx = attractor.x - body.x;
-        const dy = attractor.y - body.y;
-        const distSq = Math.max(dx * dx + dy * dy, 900);
-        const force = gravity * 1200 * body.mass / distSq;
-        body.vx += dx * force;
-        body.vy += dy * force;
-        body.vx *= 0.992;
-        body.vy *= 0.992;
-        body.x += body.vx;
-        body.y += body.vy;
-
-        if (body.x < body.radius || body.x > width - body.radius) {
-          body.vx *= -0.82;
-          body.x = Math.max(body.radius, Math.min(width - body.radius, body.x));
-        }
-        if (body.y < body.radius || body.y > height - body.radius) {
-          body.vy *= -0.82;
-          body.y = Math.max(body.radius, Math.min(height - body.radius, body.y));
-        }
-
-        ctx.beginPath();
-        ctx.fillStyle = `hsl(${body.hue}, 42%, 34%)`;
-        ctx.arc(body.x, body.y, body.radius, 0, Math.PI * 2);
-        ctx.fill();
+      if (pointer.active) {
+        const dx = pointer.x - weight.x;
+        const dy = pointer.y - weight.y;
+        weight.vx += dx * 0.12;
+        weight.vy += dy * 0.12;
       }
+
+      weight.vy += gravity * delta;
+      weight.x += weight.vx * delta * 60;
+      weight.y += weight.vy * delta * 60;
+      weight.vx *= 0.992;
+      weight.vy *= 0.992;
+      if (tethered) keepOnTether();
+
+      if (weight.x < weight.radius || weight.x > width - weight.radius) {
+        weight.vx *= -0.76;
+        weight.x = Math.max(weight.radius, Math.min(width - weight.radius, weight.x));
+      }
+      if (weight.y < weight.radius || weight.y > height - weight.radius) {
+        weight.vy *= -0.76;
+        weight.y = Math.max(weight.radius, Math.min(height - weight.radius, weight.y));
+      }
+
+      const hit = Math.hypot(weight.x - target.x, weight.y - target.y) < weight.radius + target.radius;
+      if (hit && target.pulse <= 0.05) burst(target.x, target.y);
+      target.pulse = Math.max(0, target.pulse - delta * 1.8);
+
+      drawTarget();
+      drawSparks(delta);
+
+      if (tethered) {
+        ctx.strokeStyle = "#6f4938";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(anchor.x, anchor.y);
+        ctx.lineTo(weight.x, weight.y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#25211d";
+      ctx.beginPath();
+      ctx.arc(anchor.x, anchor.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.shadowColor = "rgba(111, 73, 56, 0.2)";
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = "#6f4938";
+      ctx.beginPath();
+      ctx.arc(weight.x, weight.y, weight.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "rgba(251, 248, 239, 0.62)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(weight.x - 6, weight.y - 7, weight.radius * 0.32, 0, Math.PI * 2);
+      ctx.stroke();
 
       requestAnimationFrame(step);
     }
@@ -171,9 +253,9 @@
     canvas.addEventListener("pointerdown", (event) => {
       const point = canvasPoint(event);
       pointer.active = true;
+      pointer.id = event.pointerId;
       pointer.x = point.x;
       pointer.y = point.y;
-      addAt(point.x, point.y);
       canvas.setPointerCapture(event.pointerId);
     });
     canvas.addEventListener("pointermove", (event) => {
@@ -184,12 +266,19 @@
     });
     canvas.addEventListener("pointerup", () => {
       pointer.active = false;
+      pointer.id = null;
     });
     canvas.addEventListener("pointercancel", () => {
       pointer.active = false;
+      pointer.id = null;
     });
-    addBody.addEventListener("click", () => addAt());
-    resetBodies.addEventListener("click", reset);
+    cutTether.addEventListener("click", () => {
+      tethered = false;
+    });
+    resetToy.addEventListener("click", reset);
+    tetherControl.addEventListener("input", () => {
+      if (tethered) keepOnTether();
+    });
     window.addEventListener("resize", reset);
 
     reset();
