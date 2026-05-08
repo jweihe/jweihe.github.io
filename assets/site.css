@@ -817,6 +817,37 @@ nav a:hover,
   line-height: 1.72;
 }
 
+.star-history-panel {
+  overflow: hidden;
+  margin-top: 18px;
+  border: 1px solid var(--faint);
+  padding: 20px;
+  background:
+    linear-gradient(135deg, rgba(37, 33, 29, 0.06), transparent 42%),
+    rgba(251, 248, 239, 0.88);
+}
+
+.star-history-panel h3 {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.star-history-panel > a {
+  display: block;
+  overflow-x: auto;
+  border: 1px solid var(--faint);
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.star-history-panel img {
+  width: 100%;
+  min-width: 560px;
+  background: #ffffff;
+}
+
 .project-stats {
   display: flex;
   flex-wrap: wrap;
