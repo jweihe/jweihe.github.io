@@ -325,7 +325,7 @@
 <tr><td>Token-level gating</td><td>用 token-level signal 控制 distillation 强度</td></tr>
 <tr><td>Gap gating</td><td>用 <code>σ(β Δ_t)</code> 作为 token-level trust weight</td></tr>
 <tr><td>Stop-gradient</td><td>阻断 gate / teacher log-prob 的梯度，使其只作为权重或常量</td></tr>
-<tr><td>Reverse KL</td><td>`DKL(π_student</td><td></td><td>π_teacher)`，更 mode-seeking，适合 student-sampled tokens</td></tr>
+<tr><td>Reverse KL</td><td><code>DKL(π_student || π_teacher)</code>，更 mode-seeking，适合 student-sampled tokens</td></tr>
 <tr><td>Skill retrieval</td><td>从 SkillBank 中检索 task-relevant skills 作为 privileged context</td></tr>
 </tbody></table></div>
 <h2>17. 总体评价</h2>
