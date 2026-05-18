@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Notes</title>
-  <meta name="description" content="Notes.">
+  <title>Paper Reading</title>
+  <meta name="description" content="Chinese paper reading reports and research notes.">
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -16,18 +16,49 @@
       <a href="projects.html">Projects</a>
       <a href="playground.html">Playground</a>
       <a href="blog.html">Writing</a>
-      <a href="notes.html">Notes</a>
+      <a href="notes.html">Paper Reading</a>
     </nav>
   </header>
 
-  <main class="page">
+  <main class="page paper-reading-page">
     <header class="page-header">
-      <p class="kicker">Notes</p>
-      <h1>Notes</h1>
-      <p>A reserved space for reading notes, research notes, and fragments.</p>
+      <p class="kicker">Paper Reading</p>
+      <h1>Paper Reading</h1>
+      <p>Chinese reading reports for papers I want to keep close: method structure, experimental evidence, and reusable research takeaways.</p>
     </header>
-    <section class="empty-state">
-      <p>No notes yet.</p>
+    <section class="paper-note-list" aria-label="Paper reading reports">
+      <article class="paper-note-item">
+        <a class="card-hit-area" href="paper-reading/self-distilled-agentic-rl.html" aria-label="SDAR: Self-Distilled Agentic Reinforcement Learning"></a>
+        <time>2026-05-14</time>
+        <h2>SDAR: Self-Distilled Agentic Reinforcement Learning</h2>
+        <p>把 GRPO 主目标和 gated OPSD auxiliary objective 结合，用 token-level teacher-student gap 控制 privileged context 的蒸馏强度。</p>
+        <div class="paper-note-tags"><span>agentic RL</span><span>self-distillation</span><span>GRPO</span><span>OPSD</span></div>
+        <a class="text-link" href="paper-reading/self-distilled-agentic-rl.html">Read report</a>
+      </article>
+      <article class="paper-note-item">
+        <a class="card-hit-area" href="paper-reading/gold-medal-olympiad-reasoning.html" aria-label="SU-01: Gold-Medal-Level Olympiad Reasoning"></a>
+        <time>2026-05-13</time>
+        <h2>SU-01: Gold-Medal-Level Olympiad Reasoning</h2>
+        <p>从 reverse-perplexity curriculum SFT 到 RLVR、proof-level RL，再到 solve-verify-refine test-time scaling 的统一 post-training recipe。</p>
+        <div class="paper-note-tags"><span>olympiad reasoning</span><span>RLVR</span><span>proof reward</span><span>test-time scaling</span></div>
+        <a class="text-link" href="paper-reading/gold-medal-olympiad-reasoning.html">Read report</a>
+      </article>
+      <article class="paper-note-item">
+        <a class="card-hit-area" href="paper-reading/cl-bench-life.html" aria-label="CL-bench Life: Real-Life Context Learning"></a>
+        <time>2026-04</time>
+        <h2>CL-bench Life: Real-Life Context Learning</h2>
+        <p>把 context learning 推到群聊、会议、笔记、账单、浏览轨迹等真实生活材料，检验模型是否会正确使用嘈杂上下文。</p>
+        <div class="paper-note-tags"><span>benchmark</span><span>context learning</span><span>real-life context</span></div>
+        <a class="text-link" href="paper-reading/cl-bench-life.html">Read report</a>
+      </article>
+      <article class="paper-note-item">
+        <a class="card-hit-area" href="paper-reading/supo-context-management.html" aria-label="SUPO: Summarization-based Context Management"></a>
+        <time>2025-10-08</time>
+        <h2>SUPO: Summarization-based Context Management</h2>
+        <p>让 multi-turn RL agent 学会周期性生成 task-relevant summaries，在固定 context window 内训练和执行更长 horizon 的工具调用任务。</p>
+        <div class="paper-note-tags"><span>multi-turn RL</span><span>context management</span><span>summarization</span><span>agent</span></div>
+        <a class="text-link" href="paper-reading/supo-context-management.html">Read report</a>
+      </article>
     </section>
   </main>
 

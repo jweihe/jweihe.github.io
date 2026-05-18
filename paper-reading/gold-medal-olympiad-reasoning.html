@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>《Achieving Gold-Medal-Level Olympiad Reasoning via Simple and Unified Scaling》中文阅读报告 · Paper Reading</title>
+  <meta name="description" content="从 reverse-perplexity curriculum SFT 到 RLVR、proof-level RL，再到 solve-verify-refine test-time scaling 的统一 post-training recipe。">
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body class="ink-theme">
+  <header class="site-header">
+    <a class="brand" href="../">jweihe</a>
+    <nav aria-label="Site navigation">
+      <a href="../about.html">About</a>
+      <a href="../publications.html">Publications</a>
+      <a href="../projects.html">Projects</a>
+      <a href="../playground.html">Playground</a>
+      <a href="../blog.html">Writing</a>
+      <a href="../notes.html">Paper Reading</a>
+    </nav>
+  </header>
+
+  <main>
+    <article class="article paper-reading-article">
+      <header class="article-header">
+        <a class="text-link" href="../notes.html">Paper Reading</a>
+        <p class="kicker">2026-05-13</p>
+        <h1>《Achieving Gold-Medal-Level Olympiad Reasoning via Simple and Unified Scaling》中文阅读报告</h1>
+        <p>从 reverse-perplexity curriculum SFT 到 RLVR、proof-level RL，再到 solve-verify-refine test-time scaling 的统一 post-training recipe。</p>
+      </header>
+<h2>1. 基本信息</h2>
+<ul>
+<li>论文：Achieving Gold-Medal-Level Olympiad Reasoning via Simple and Unified Scaling</li>
+<li>arXiv：2605.13301v1</li>
+<li>日期：2026-05-13 提交</li>
+<li>作者：Yafu Li、Runzhe Zhan、Haoran Zhang、Shunkai Zhang、Yizhuo Li 等 28 位作者</li>
+<li>机构：上海人工智能实验室、香港中文大学、清华大学、上海交通大学、北京大学</li>
+<li>链接：</li>
+<li>论文：https://arxiv.org/abs/2605.13301</li>
+<li>PDF：https://arxiv.org/pdf/2605.13301</li>
+<li>项目页：https://simplified-reasoning.github.io/SU-01/</li>
+<li>代码：https://github.com/Simplified-Reasoning/SU-01</li>
+<li>模型：https://huggingface.co/Simplified-Reasoning/SU-01</li>
+<li>主题关键词：奥赛推理、长程证明、SFT、RLVR、GSPO、proof reward、experience replay、test-time scaling、self-verification</li>
+</ul>
+<h2>2. 一句话总结</h2>
+<p>这篇技术报告提出了一个相对统一的 post-training recipe：从一个 30B-A3B reasoning backbone 出发，先用 reverse-perplexity curriculum SFT 建立 rigorous proof-search 行为，再用“RLVR + proof-level RL”增强 problem-solving 和 proof quality，最后通过 solve-verify-refine 式的 test-time scaling，把 SU-01 推到 IMO、USAMO、IPhO 的金牌线附近或之上。</p>
+<p>更短地说：它不是重新发明一个专用奥赛 solver，而是尝试证明“一个 generalist reasoning model 经过合适的 behavior shaping、reward training 和 inference-time verification/refinement loop，可以被 specialized 成强 proof solver”。</p>
+<h2>3. 背景与问题</h2>
+<p>奥赛题和普通数学 benchmark 的核心差别在于：最终答案正确远远不够，解法必须能经受严格评分。模型需要：</p>
+<ul>
+<li>搜索多个可能路线，而不是沿第一个局部模式走到底。</li>
+<li>精确控制假设、边界条件、分类讨论和中间引理。</li>
+<li>发现 proof gaps，并能做 targeted repair。</li>
+<li>把 solving process 组织成可审阅的 full proof。</li>
+</ul>
+<p>论文关注的问题是：能否用一个简单、统一、跨数学与科学任务的后训练流程，把一个已有的推理 backbone 推到奥赛级别，而不依赖专门符号系统、外部代码执行或特定题型 solver？</p>
+<p>作者给出的答案是 SU-01。它以 P1-30B-A3B 为初始模型，通过三段 training 和一段 test-time scaling 来实现：</p>
+<ol>
+<li>SFT：让模型学会 long-form proof、self-checking 和 repair。</li>
+<li>Coarse RL：用 verifiable rewards 增强 answer-seeking / problem-solving ability。</li>
+<li>Refined RL：用 proof-level reward、self-refinement 和 replay 增强 proof reliability。</li>
+<li>TTS：在 inference time 反复 solve、verify、refine，直到 candidate proof 稳定通过。</li>
+</ol>
+<h2>4. 方法总览</h2>
+<blockquote><p><strong>图：SU-01 训练与推理流水线</strong><br>内容：展示 SU-01 从 SFT、Coarse RL、Refined RL 到 TTS 的完整 training/inference pipeline，是理解全文方法结构的总览图。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig2_pipeline_p03.png" alt="SU-01 训练与推理流水线" loading="lazy"><figcaption>SU-01 训练与推理流水线</figcaption></figure>
+<p>这张图是全文的骨架。它把 SU-01 拆成四个阶段：SFT、Coarse RL、Refined RL、TTS。读图时要注意两个主线：</p>
+<ul>
+<li>训练目标从 <code>behavior shaping</code> 逐步转向 <code>verifiable problem solving</code> 和 <code>proof quality</code>。</li>
+<li>推理目标从 <code>single-pass generation</code> 转向 <code>solve-verify-refine-accept</code> 的 proof workflow。</li>
+</ul>
+<p>论文的核心不是某一个复杂模块，而是阶段之间的配合：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>阶段</th><th>输入/机制</th><th>主要目标</th><th>关键风险</th></tr></thead>
+<tbody>
+<tr><td>SFT</td><td>338K long-form trajectories、reverse-PPL ordering</td><td>安装 proof-search、self-checking、repair 行为</td><td>过拟合长输出、损伤原模型能力</td></tr>
+<tr><td>Coarse RL</td><td>8,967 个 verifiable prompts、binary rewards、GSPO</td><td>恢复并增强 answer-seeking ability</td><td>reward 只看 final answer，可能奖励 brittle reasoning</td></tr>
+<tr><td>Refined RL</td><td>proof reward、self-refinement prompts、experience replay</td><td>强化 proof quality</td><td>judge 噪声、reward hacking、成本高</td></tr>
+<tr><td>TTS</td><td>solve-verify-refine loop</td><td>把 test-time compute 投入最难题</td><td>成本巨大，和 single-pass decoding 不完全可比</td></tr>
+</tbody></table></div>
+<h2>5. SFT：先把模型“写证明”的行为改造出来</h2>
+<h3>5.1 为什么先做 SFT</h3>
+<p>作者选择 P1-30B-A3B 作为初始模型，因为它已经有数学、物理和科学推理能力。但论文指出，这类 post-trained model 即使能做出一些答案，也未必天然组织出 rigorous proof。因此 SFT 在这里不是为了从零教数学，而是为了改变 reasoning behavior：</p>
+<ul>
+<li>从 short answer 转向 long-form proof search。</li>
+<li>从直接求值转向“提出方案、self-check、repair proof gaps”。</li>
+<li>保留原模型的 general scientific competence。</li>
+</ul>
+<p>这个设计很重要。论文的隐含假设是：对已有强模型做 behavior adaptation，比从 base model 重新训练 olympiad reasoning 更经济。</p>
+<h3>5.2 SFT 数据构成</h3>
+<blockquote><p><strong>图：SFT 数据组成</strong><br>内容：展示 338K 条 SFT trajectories 中 direct generation、self-verification 和 self-refinement 数据的占比，说明作者并不只训练解题，还显式训练 checking / repair 行为。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig3_sft_data_p04.png" alt="SFT 数据组成" loading="lazy"><figcaption>SFT 数据组成</figcaption></figure>
+<p>SFT 过滤后共有 338K 条 trajectories，且 response length 小于 8,192 tokens。数据分成两大类：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>类别</th><th>数量</th><th>占比</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>Math</td><td>71.8K</td><td>21.2%</td><td>奥赛数学与证明能力</td></tr>
+<tr><td>STEM</td><td>62.9K</td><td>18.6%</td><td>科学推理迁移</td></tr>
+<tr><td>Code</td><td>30.2K</td><td>8.9%</td><td>结构化推理与程序式分解</td></tr>
+<tr><td>Instruction Following</td><td>18.8K</td><td>5.6%</td><td>保持通用指令跟随</td></tr>
+<tr><td>Self-Verify</td><td>89.5K</td><td>26.4%</td><td>学会 self-check proof</td></tr>
+<tr><td>Self-Refine</td><td>65.2K</td><td>19.3%</td><td>学会 repair flawed proof</td></tr>
+</tbody></table></div>
+<p>direct generation 类占 54.3%，self-improvement 类占 45.7%。这个比例反映出论文的一个判断：olympiad-level reasoning 不是只靠“会解题”，还要训练模型理解什么叫 proof gap，以及如何 refine / repair proof。</p>
+<h3>5.3 Reverse-Perplexity Curriculum</h3>
+<p>SFT 的关键小技巧是 reverse-perplexity curriculum。对每条 SFT 样本 <code>(x_i, y_i)</code>，作者用 initial policy <code>pi_0</code> 计算 length-normalized perplexity：</p>
+<pre><code class="language-text">PPL(x_i, y_i) = exp( - 1/T_i * sum_t log pi_0(y_i,t | x_i, y_i,&lt;t) )</code></pre>
+<p>然后每个 epoch 内按 PPL 从高到低训练。高 PPL 表示 teacher trajectory 和当前模型习惯最不匹配，通常包含更陌生的 proof-search / repair patterns。作者的解释是：先冲击模型最缺的行为，再用更熟悉的样本巩固。</p>
+<blockquote><p><strong>图：逆困惑度排序效果</strong><br>内容：比较 random、PPL ascending、PPL descending 三种 SFT data ordering；PPL descending 在 AnswerBench、AMO-Bench 和 truncation rate 上更稳定。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig6_reverse_ppl_p11.png" alt="逆困惑度排序效果" loading="lazy"><figcaption>逆困惑度排序效果</figcaption></figure>
+<p>验证结果支持这个选择：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>SFT 排序</th><th>AnswerBench</th><th>AMO-Bench</th><th>截断率表现</th></tr></thead>
+<tbody>
+<tr><td>Random</td><td>39.5</td><td>31.0</td><td>7.3% / 8.0%</td></tr>
+<tr><td>PPL ascending</td><td>24.3</td><td>15.0</td><td>最差</td></tr>
+<tr><td>PPL descending</td><td>55.8</td><td>40.0</td><td>0.3% / 0.0%</td></tr>
+</tbody></table></div>
+<p>这里最有价值的不是分数本身，而是 <code>truncation rate</code> 这个 diagnostic signal。作者认为，如果模型尚未适应 long-CoT proof，它容易重复、绕圈、迟迟不收束，导致输出被截断。PPL descending 能显著降低 truncation rate，说明它不仅提高了 benchmark 分数，也改善了 long reasoning stability。</p>
+<h2>6. RL：从“会写证明”推进到“能解难题且证明可靠”</h2>
+<h3>6.1 RL 数据</h3>
+<p>RL 使用独立于 SFT 的 prompt pool。最终包括：</p>
+<ul>
+<li>verifiable set：8,967 个 prompts。</li>
+<li>non-verifiable / proof-oriented set：16,287 个 prompts。</li>
+</ul>
+<p>作者先去重、去污染，再通过 rejection sampling 去掉对当前策略过易或过难的问题。这个过滤很实际：RL 需要有梯度信号，太容易的问题没有学习价值，太难的问题又会让奖励长期为零。</p>
+<h3>6.2 Coarse RL：先用 verifiable rewards 拉高解题能力</h3>
+<p>Coarse RL 只用 verifiable prompts，形式是 RLVR，即 reinforcement learning with verifiable rewards。每个 prompt 采样一组 candidate solutions，final answer 被 verifier 转成 binary reward：</p>
+<ul>
+<li><code>r(q, o)=1</code>：答案正确。</li>
+<li><code>r(q, o)=0</code>：答案错误。</li>
+</ul>
+<p>reward pipeline 是分层的：</p>
+<ol>
+<li>提取最终答案，做规范化文本匹配。</li>
+<li>无法解决的样本交给 Math-Verify 做 expression-level check。</li>
+<li>仍无法解决的样本交给 gpt-oss-120b 做 generative verification。</li>
+</ol>
+<p>优化算法使用 GSPO，即 Group Sequence Policy Optimization。相比 token-level GRPO，GSPO 的奖励分配和 clip 都在完整 response 级别，更契合“整段解答最终对不对”的 outcome reward。</p>
+<p>论文给出的 GSPO 思路可以简化理解为：</p>
+<ul>
+<li>同一个问题采样多个 responses。</li>
+<li>用 group mean reward 做 baseline。</li>
+<li>对整段回答计算 sequence-level importance ratio。</li>
+<li>用 clipped surrogate 控制策略更新幅度。</li>
+</ul>
+<p>作者还冻结 MoE router，减少 replay 或 off-policy trajectories 造成的 routing instability。</p>
+<h3>6.3 Refined RL：把目标从 answer correctness 换成 proof correctness</h3>
+<p>Coarse RL 的问题是：final answer correct 不等于 proof rigorous。奥赛评分会惩罚 hidden gaps、incomplete case analysis、unjustified transformations 和 conclusion jumps。Refined RL 因此加入三个机制。</p>
+<p>第一，generative proof reward。数学 prompt 使用 DeepSeekMath-V2 作为 proof-level reward model，读取完整题目和完整解答，输出 binary proof-quality reward。它不只看 boxed answer，而是判断 reasoning path 是否 valid、complete、rigorous。论文也承认这种 reward 更贵、更容易受 judge artifact 影响，因此加入 anti-hack preprocessing，过滤格式泄漏、不平衡 thinking delimiter、严重重复等异常输出。</p>
+<p>第二，self-refinement。若一个 query group 的平均 proof reward 低于 <code>tau_ref = 0.5</code>，failed responses 会被转成 refinement prompts：包含原题、错误解，要求模型 critique argument、fix proof errors、fill missing justifications，并输出 complete final solution。训练中 self-refinement 数据目标比例是 <code>eta_ref = 0.2</code>。</p>
+<p>第三，experience replay。难题上偶尔出现的 successful proof trajectory 很珍贵，直接丢掉会浪费信号。作者把“当前 group 里成功轨迹数量很少”的 query 加入 replay buffer，之后以受控比例 replay successful trajectories。Refined RL 的 replay ratio 是 <code>rho = 0.25</code>。如果同题有多个 successful trajectories，则选 lowest-entropy trajectory，理由是低熵更可能代表稳定可复现的 proof path。</p>
+<p>这三者的组合逻辑是：</p>
+<ul>
+<li>proof reward 告诉模型“proof 是否 valid / complete”。</li>
+<li>self-refinement 训练模型“如何从 flawed solution refine 到 corrected proof”。</li>
+<li>replay 保留 hard problems 上的 rare successful trajectories，避免一次成功样本被训练过程冲掉。</li>
+</ul>
+<h2>7. TTS：把推理变成 solve-verify-refine loop</h2>
+<p>TTS 是 test-time scaling。论文特别强调，这不是简单 best-of-N sampling。对奥赛题来说，一堆 candidate solutions 里选一个仍可能选到有 hidden gaps 的 proof。因此 SU-01 使用 solve-verify-refine loop：</p>
+<ol>
+<li>solver prompt 生成 initial solution。</li>
+<li>verifier prompt 检查 full solution，输出 structured bug report。</li>
+<li>verdict step 决定 accept、reject 或继续 refine。</li>
+<li>refinement prompt 基于 bug report refine 解法。</li>
+<li>重复直到 candidate solution 连续通过 verification，或耗尽 budget。</li>
+</ol>
+<p>推理配置很重：</p>
+<ul>
+<li>单次 generation max length 为 160K tokens。</li>
+<li>每题最多 10 个 independent runs。</li>
+<li>每个 run 最多 30 轮探索。</li>
+<li>连续 5 次 verification true 后接受。</li>
+<li>连续 10 次 verification false 可提前终止。</li>
+</ul>
+<blockquote><p><strong>图：TTS 各动作长度分布</strong><br>内容：展示 USAMO 2026 上 initial solution、refinement、verification 和 verdict 的 generation length 分布，说明主要 compute budget 花在 proof construction 和 repair 上。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig5_tts_lengths_p11.png" alt="TTS 各动作长度分布" loading="lazy"><figcaption>TTS 各动作长度分布</figcaption></figure>
+<p>USAMO 2026 TTS traces 的长度分布说明 compute 主要花在 proof construction 和 refinement 上：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>TTS 动作</th><th>中位长度</th></tr></thead>
+<tbody>
+<tr><td>Initial solution</td><td>106K tokens</td></tr>
+<tr><td>Refinement</td><td>83K tokens</td></tr>
+<tr><td>Verification</td><td>28.7K tokens</td></tr>
+<tr><td>verdict</td><td>404 tokens</td></tr>
+</tbody></table></div>
+<p>这说明 SU-01 的强结果高度依赖 long context 与大 inference budget。论文的积极解读是：模型能够在 draft、critique 和 refinement context 中持续保持超过 100K tokens 的 coherent reasoning。需要谨慎的地方是：这类结果不应和 single-pass short decoding 直接等价比较。</p>
+<h2>8. 实验设计与结果</h2>
+<h3>8.1 Benchmark 分类</h3>
+<p>论文把评测分成三类：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>类别</th><th>Benchmark</th><th>测什么</th></tr></thead>
+<tbody>
+<tr><td>Answer-verifiable</td><td>AnswerBench、AMO-Bench、AIME 2025/2026、FrontierScience-Olympiad</td><td>final answer correctness 与 verifiable problem solving</td></tr>
+<tr><td>Proof-oriented / non-verifiable</td><td>IMO-ProofBench、FrontierScience-Research</td><td>full reasoning trace 与 proof quality</td></tr>
+<tr><td>官方竞赛题</td><td>IMO 2025、USAMO 2026、IPhO 2024/2025</td><td>竞赛式端到端表现</td></tr>
+</tbody></table></div>
+<h3>8.2 Answer-Verifiable 任务</h3>
+<blockquote><p><strong>图：Answer-Verifiable Tasks 结果</strong><br>内容：汇总 AnswerBench、AMO-Bench、AIME 和 FrontierScience-Olympiad 的结果，用来判断 SU-01 是否保留 answer-level problem-solving ability。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/table1_verifiable_p08.png" alt="Answer-Verifiable Tasks 结果" loading="lazy"><figcaption>Answer-Verifiable Tasks 结果</figcaption></figure>
+<p>SU-01 在 answer-verifiable tasks 上的平均分是 77.3%，几乎追平同规模最强 baseline Qwen3.6-35B-A3B 的 77.4%。更细看：</p>
+<ul>
+<li>AMO-Bench：SU-01 59.8%，同规模最好。</li>
+<li>AIME 2025/2026：94.6% / 93.3%，同规模最好。</li>
+<li>AnswerBench：77.5%，略低于 Nemotron-Cascade-2 80.5% 和 Qwen3.6 78.0%。</li>
+<li>FrontierScience-Olympiad overall：61.5%，低于 Qwen3.6 的 65.0%，但仍显示跨科学任务迁移。</li>
+</ul>
+<p>我的判断：answer-verifiable tasks 证明 SU-01 没有因 proof-oriented training 而丢掉 answer ability，但它的优势不主要在普通 answer matching，而是在更接近 contest-style 和 proof-style 的任务上。</p>
+<h3>8.3 Proof-Oriented 与 Non-Verifiable 任务</h3>
+<blockquote><p><strong>图：Proof-Oriented / Non-Verifiable Tasks 结果</strong><br>内容：对比 IMO-ProofBench 和 FrontierScience-Research，突出 SU-01 在 proof-oriented tasks 上的优势以及与更大模型之间的差距。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/table3_nonverifiable_p09.png" alt="Proof-Oriented / Non-Verifiable Tasks 结果" loading="lazy"><figcaption>Proof-Oriented / Non-Verifiable Tasks 结果</figcaption></figure>
+<p>IMO-ProofBench 是全文最关键的 benchmark。PDF v1 中 SU-01 的结果是：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>模型/设置</th><th>Basic</th><th>Advanced</th><th>Overall</th></tr></thead>
+<tbody>
+<tr><td>P1-30B-A3B</td><td>33.8%</td><td>6.2%</td><td>20.0%</td></tr>
+<tr><td>Nemotron-Cascade-2</td><td>77.1%</td><td>28.6%</td><td>52.9%</td></tr>
+<tr><td>SU-01 direct</td><td>77.1%</td><td>38.1%</td><td>57.6%</td></tr>
+<tr><td>SU-01 w/ TTS</td><td>91.0%</td><td>49.5%</td><td>70.2%</td></tr>
+<tr><td>GPT-5.5-High</td><td>96.7%</td><td>64.8%</td><td>80.7%</td></tr>
+</tbody></table></div>
+<p>结论比较清楚：</p>
+<ul>
+<li>同规模里，SU-01 direct 已经是 proof-oriented tasks 最强之一。</li>
+<li>TTS 对 proof benchmark 的提升很大，尤其 Basic 从 77.1% 到 91.0%，Advanced 从 38.1% 到 49.5%。</li>
+<li>但和 GPT-5.5-High 这种更大或更强推理设置相比，仍有明显差距。</li>
+</ul>
+<p>FrontierScience-Research 上，SU-01 overall 是 11.7%，是 PDF 表中同规模最好，但绝对分数仍低。这个结果支持“科学推理有迁移”，但不能过度解读为研究级科学推理已经很强。</p>
+<h3>8.4 物理奥赛与数学奥赛</h3>
+<blockquote><p><strong>图：IPhO 结果</strong><br>内容：展示 SU-01 在 IPhO 2024/2025 上的 direct 和 TTS 分数，用来支撑其物理奥赛能力和科学推理迁移。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/table2_ipho_p09.png" alt="IPhO 结果" loading="lazy"><figcaption>IPhO 结果</figcaption></figure>
+<p>IPhO 2024/2025 的金牌线分别是 20.8 和 19.7。SU-01：</p>
+<ul>
+<li>direct：23.5 / 20.3，已经超过两年金牌线。</li>
+<li>TTS：25.3 / 21.7，进一步提升。</li>
+</ul>
+<p>物理结果的意义是：虽然 refined RL 的关键机制主要围绕 mathematical proof 和 proof reward，模型并没有退化成纯数学竞赛器，仍能在物理奥赛上维持较强 reasoning。</p>
+<blockquote><p><strong>图：IMO 与 USAMO 竞赛结果</strong><br>内容：展示 SU-01 在 IMO 2025 和 USAMO 2026 各题上的得分；direct 是铜牌线水平，TTS 后达到或超过金牌线。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/table4_math_olympiads_p09.png" alt="IMO 与 USAMO 竞赛结果" loading="lazy"><figcaption>IMO 与 USAMO 竞赛结果</figcaption></figure>
+<p>IMO 2025 和 USAMO 2026 是论文标题里“gold-medal-level”的主要证据：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>比赛</th><th>direct</th><th>w/ TTS</th><th>金/银/铜线</th></tr></thead>
+<tbody>
+<tr><td>IMO 2025</td><td>21</td><td>35</td><td>35 / 28 / 19</td></tr>
+<tr><td>USAMO 2026</td><td>15</td><td>35</td><td>25 / 18 / 11</td></tr>
+</tbody></table></div>
+<p>需要分开解读：</p>
+<ul>
+<li>direct SU-01 在两场数学奥赛上是铜牌线水平。</li>
+<li>TTS 后达到 IMO 2025 金牌线，并超过 USAMO 2026 金牌线 10 分。</li>
+<li>12 道 IMO/USAMO 题中，TTS 后 10 道满分，失败在 IMO 2025 P6 和 USAMO 2026 P2。</li>
+</ul>
+<p>论文的 case study 认为模型擅长把问题形式化为刚性框架，例如几何坐标化/复数化、数论同余分类、函数方程递推、数字问题的自动机式 DP。失败模式则集中在需要精细保持组合结构或全局过程不变量的题目上。</p>
+<h3>8.5 分阶段增长证据</h3>
+<blockquote><p><strong>图：训练阶段性能变化</strong><br>内容：展示 P1、SFT、Coarse RL、Refined RL、TTS 逐阶段对 AnswerBench 和 ProofBench 的影响，是验证 pipeline 分工的关键证据。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig4_progressive_reasoning_p10.png" alt="训练阶段性能变化" loading="lazy"><figcaption>训练阶段性能变化</figcaption></figure>
+<p>Figure 4 是论文最有解释力的分析图。它说明每个阶段确实在做不同的事：</p>
+<div class="table-wrap"><table>
+<thead><tr><th>阶段</th><th>AnswerBench</th><th>ProofBench Basic</th><th>ProofBench Advanced</th><th>解读</th></tr></thead>
+<tbody>
+<tr><td>P1-30B-A3B</td><td>69.2</td><td>33.8</td><td>6.2</td><td>原模型会做答案，但 proof quality 弱</td></tr>
+<tr><td>SFT</td><td>59.8</td><td>57.6</td><td>14.8</td><td>牺牲 short-answer ability，换来 proof behavior</td></tr>
+<tr><td>SFT + Coarse RL</td><td>77.2</td><td>76.7</td><td>25.2</td><td>RLVR 恢复并增强 problem solving</td></tr>
+<tr><td>SU-01</td><td>77.5</td><td>77.1</td><td>38.1</td><td>Refined RL 主要改善 hard proof problems</td></tr>
+<tr><td>SU-01 w/ TTS</td><td>-</td><td>91.0</td><td>49.5</td><td>inference-time refinement 继续提升 proof quality</td></tr>
+</tbody></table></div>
+<p>这支持作者的阶段划分：SFT 做 behavior shaping，Coarse RL 拉 answer-seeking ability，Refined RL 对 advanced proof 更有效，TTS 则把训练出的 self-verification / self-refinement ability 在 inference time 放大。</p>
+<h3>8.6 与整体排行榜的关系</h3>
+<blockquote><p><strong>图：IMO-ProofBench 总览</strong><br>内容：横向比较 SU-01 与多个同规模和更大模型在 IMO-ProofBench 上的表现，同时展示 SU-01 pipeline 的逐步提升。</p></blockquote>
+<figure class="report-figure"><img src="../assets/paper-reading/gold-medal-olympiad-reasoning/fig1_imoproofbench_overall_p01.png" alt="IMO-ProofBench 总览" loading="lazy"><figcaption>IMO-ProofBench 总览</figcaption></figure>
+<p>Figure 1 把 SU-01 放到 IMO-ProofBench 横向比较中。蓝色条展示从 P1-30B-A3B 到 SFT、Coarse RL、SU-01、SU-01 w/ TTS 的增长。最核心的观察是：</p>
+<ul>
+<li>backbone：20.0%</li>
+<li>SFT：36.2%</li>
+<li>SFT + Coarse RL：51.0%</li>
+<li>SU-01 direct：57.6%</li>
+<li>SU-01 w/ TTS：70.2%</li>
+</ul>
+<p>这条曲线比单个最终分数更重要，因为它证明结果不是 single prompt trick，而是 staged training 逐步叠加的效果。</p>
+<h2>9. 相关论文脉络</h2>
+<ul>
+<li>AlphaGeometry / AlphaProof / AlphaGeometry 2：代表 symbolic / neuro-symbolic olympiad solving 路线，强调 search 与 formal systems。SU-01 不走专用 symbolic system，而是 natural-language reasoning 加 self-verification。</li>
+<li>DeepSeekMath / Qwen-Math / DeepSeek-R1：代表 mathematical reasoning post-training 和 RLVR 的基础脉络。SU-01 继承了“verifiable rewards 能提升 reasoning”的路线，但把目标推进到 proof quality。</li>
+<li>GSPO：为 MoE reasoning model 提供 sequence-level policy optimization。SU-01 的 coarse RL 和 replay 设计都建立在 GSPO 接口上。</li>
+<li>ExGRPO / experience replay for reasoning：提供“保存 rare successful trajectories”的思想。SU-01 在 refined RL 中使用更简单的 replay，不使用原 ExGRPO 的 reward shaping。</li>
+<li>DeepSeekMath-V2：作为 proof reward 的关键依赖之一，提供 proof-level judging。</li>
+<li>Huang &amp; Yang 的 verification-and-refinement pipeline：SU-01 的 TTS 基本沿着 solve、verify、refine、accept 的范式展开。</li>
+<li>Nemotron-Cascade-2：同规模 MoE 强 baseline，代表更复杂多阶段 post-training recipe。SU-01 的卖点是用较简洁统一的配方达到接近或超过同规模表现。</li>
+</ul>
+<h2>10. 论文的主要价值</h2>
+<p>第一，阶段设计清晰。论文没有只报告最终模型，而是给出从 SFT 到 RL 到 TTS 的分阶段性能变化，使方法论更可分析。</p>
+<p>第二，把 <code>proof quality</code> 显式纳入训练。很多 RLVR 只看 final answer，SU-01 的 refined RL 明确试图优化 proof validity，这更接近奥赛评分目标。</p>
+<p>第三，强调 self-verification 和 self-refinement 的一致性。SFT 数据里有 self-verify/self-refine，Refined RL 里有 self-refinement，TTS 里也用 solve-verify-refine。这种 train-inference alignment 是设计亮点。</p>
+<p>第四，展示 compact MoE 的潜力。30B-A3B 不是小模型，但相对 frontier dense 或更大系统，仍算紧凑。论文展示了在足够长上下文和 TTS 下，compact model 可以达到很强的竞赛表现。</p>
+<p>第五，跨科学迁移有一定证据。IPhO 和 FrontierScience 的结果说明，数学证明式训练并没有完全牺牲科学推理能力。</p>
+<h2>11. 局限、风险与未回答问题</h2>
+<h3>11.1 TTS 成本非常高</h3>
+<p>数学奥赛金牌结果主要来自 TTS，而不是 direct generation。每题最多 10 runs、每 run 最多 30 轮、单次 generation 可到 160K tokens。这个预算远大于普通模型评测。因此“gold-medal-level”应理解为“在 large test-time compute 和 self-verification loop 下达到金牌线”，不是“single-pass answer 稳定达到金牌线”。</p>
+<h3>11.2 Proof reward 与评测 judge 都可能引入模型偏差</h3>
+<p>Refined RL 依赖 DeepSeekMath-V2 作为 proof reward。ProofBench 使用 Gemini-2.5-Pro 评分，FrontierScience-R 使用 GPT-5-high judge，最终 IMO/USAMO TTS 结果由人类专家评审。多种 judge 并用是现实可行的，但也让结果带有评估协议依赖。尤其 proof reward 若存在系统性偏差，训练可能学到 reward model 偏好。</p>
+<h3>11.3 refined RL 组件缺少完全拆解</h3>
+<p>Figure 4 说明 refined RL 整体对 ProofBench Advanced 有明显收益，但论文没有充分隔离 proof reward、self-refinement、experience replay 三者各自的边际贡献。读者能相信 refined RL 阶段有效，但很难判断哪个子机制最关键。</p>
+<h3>11.4 训练数据复现仍有门槛</h3>
+<p>论文披露了数据来源、规模和 filtering logic，GitHub 也发布了训练代码。但完整复现还需要 prompt pool、cleaning rules、teacher generation、reward server、long-context inference serving 和大量 GPU。对一般研究者来说，比较现实的复现目标是评测 released model 或复现较小规模 pipeline，而不是完整训练 SU-01。</p>
+<h3>11.5 科学研究泛化还不充分</h3>
+<p>FrontierScience-Research overall 只有 11.7%，虽然同规模里较强，但绝对能力有限。论文关于“research-level scientific reasoning”的表述应谨慎理解：它显示了迁移趋势，不等于已经具备可靠研究级自动推理能力。</p>
+<h3>11.6 污染与公开题库风险仍需关注</h3>
+<p>作者提到去污染和去重，但奥赛、AoPS、公开训练书、社区题库高度公开，且模型生态里相关数据可能多次流转。最终是否完全避免 benchmark leakage，需要更细的 data audit 才能判断。</p>
+<h2>12. 复现与落地建议</h2>
+<p>如果目标是复现论文结果，优先级建议如下：</p>
+<ol>
+<li>先复现 evaluation，不急着训练。使用 Hugging Face 模型和 GitHub 的 <code>su01-eval</code>，先跑 direct decoding，再跑少量 TTS。</li>
+<li>先选小 benchmark。AIME、AMO-Bench 或少量 ProofBench 子集更适合作为 smoke test；IMO/USAMO TTS 成本高。</li>
+<li>记录 inference budget。必须同时报告 max tokens、runs、exploration rounds、verification rounds，否则 TTS 分数不可比。</li>
+<li>若要复现训练，先做 SFT ablation。reverse-PPL ordering、training epochs、truncation rate 是最容易验证的局部环节。</li>
+<li>refined RL 复现应先替代 reward model 做小规模实验。可以先用一个稳定 judge 或人工小样本标签验证 proof reward 是否可靠。</li>
+<li>对业务落地而言，SU-01 更适合高价值、低吞吐、可等待的数学/科学证明任务，不适合低延迟问答。</li>
+</ol>
+<p>具体工程依赖：</p>
+<ul>
+<li>训练框架：slime。</li>
+<li>推理服务：SGLang，部分 baseline 使用 vLLM。</li>
+<li>训练规模：SFT 8 GPUs；RL 64 GPUs；RL 总 200 steps。</li>
+<li>长上下文：training 和 inference 都需要非常长的 response budget。</li>
+<li>评测：answer-verifiable tasks 用 rule-based verification + Math-Verify + model-based judging；proof tasks 需 benchmark 官方 judge 或人工专家。</li>
+</ul>
+<h2>13. 术语表</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>术语</th><th>中文解释</th></tr></thead>
+<tbody>
+<tr><td>SFT</td><td>supervised fine-tuning，用 teacher trajectories 做 behavior shaping</td></tr>
+<tr><td>Long-CoT</td><td>long chain-of-thought，强调长程 reasoning trajectory</td></tr>
+<tr><td>Reverse-PPL curriculum</td><td>reverse-perplexity curriculum，先训练模型最不熟悉的 high-PPL samples</td></tr>
+<tr><td>RLVR</td><td>reinforcement learning with verifiable rewards，用 verifiable outcome 做 RL reward</td></tr>
+<tr><td>GSPO</td><td>Group Sequence Policy Optimization，组内、序列级策略优化</td></tr>
+<tr><td>Proof reward</td><td>对 full proof quality 打分的 reward，而非只看 final answer</td></tr>
+<tr><td>Self-refinement</td><td>让模型基于 flawed solution 和 critique refine / repair proof</td></tr>
+<tr><td>Experience replay</td><td>保存并 replay hard problems 上的 rare successful trajectories</td></tr>
+<tr><td>TTS</td><td>test-time scaling，在 inference time 扩展 compute</td></tr>
+<tr><td>Solve-verify-refine</td><td>solve、verify、refine 的循环式 inference</td></tr>
+<tr><td>MoE</td><td>mixture of experts，混合专家模型</td></tr>
+<tr><td>30B-A3B</td><td>总参数约 30B、每 token 激活约 3B 参数的模型描述</td></tr>
+</tbody></table></div>
+<h2>15. 总体评价</h2>
+<p>这篇论文的强点在于 engineering recipe 清晰、stage evidence 比较完整，而且把 <code>proof validity</code> 从 evaluation metric 推进到了 training objective 和 inference workflow 中。它对做 mathematical / scientific reasoning post-training 的人有直接参考价值：不要只做 answer-level RLVR，要先做 proof behavior shaping，再用 verifiable rewards 恢复能力，再用 proof-level reward 和 self-refinement 补上 rigor，最后在 inference time 用 verification/refinement loop 放大能力。</p>
+<p>但它也不是“30B 模型 single-pass solving 已经稳定超过人类金牌选手”的证据。更准确的结论是：在高质量 post-training、long-context infrastructure、proof-level reward、experience replay 和 large test-time compute 共同作用下，一个 compact MoE 可以在若干官方奥赛题上达到金牌线水平。这个结果很强，但成本、evaluation protocol 和 reward/judge 偏差是理解它时必须同时记住的约束。</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>© jweihe</span>
+    <a href="../notes.html">Paper Reading</a>
+  </footer>
+</body>
+</html>

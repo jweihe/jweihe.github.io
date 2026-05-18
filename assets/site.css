@@ -1867,3 +1867,172 @@ figure img {
     line-height: 1.96;
   }
 }
+
+
+/* Paper reading reports */
+.paper-reading-page {
+  max-width: 1040px;
+}
+
+.paper-note-list {
+  display: grid;
+  gap: 0;
+  border-bottom: 1px solid var(--faint);
+}
+
+.paper-note-item {
+  position: relative;
+  border-top: 1px solid var(--faint);
+  padding: 28px 0 30px;
+}
+
+.paper-note-item:hover {
+  background: rgba(111, 73, 56, 0.035);
+}
+
+.paper-note-item time,
+.paper-note-item h2,
+.paper-note-item p,
+.paper-note-item .paper-note-tags,
+.paper-note-item .text-link {
+  position: relative;
+  z-index: 1;
+}
+
+.paper-note-item h2 {
+  margin: 10px 0 10px;
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 500;
+  line-height: 1.22;
+}
+
+.paper-note-item p {
+  max-width: 760px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.78;
+}
+
+.paper-note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.paper-note-tags span {
+  border: 1px solid var(--faint);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 750;
+  padding: 5px 9px;
+}
+
+.paper-reading-article h3 {
+  margin: 36px 0 14px;
+  color: var(--accent);
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.paper-reading-article ul,
+.paper-reading-article ol {
+  margin: 0 0 22px;
+  padding-left: 1.35em;
+}
+
+.paper-reading-article li {
+  margin: 0 0 10px;
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+.paper-reading-article blockquote {
+  border-left: 4px solid rgba(47, 63, 54, 0.34);
+  margin: 28px 0;
+  padding: 4px 0 4px 18px;
+  color: var(--muted);
+}
+
+.paper-reading-article blockquote p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.82;
+  text-align: left;
+}
+
+.paper-reading-article code {
+  border: 1px solid rgba(47, 63, 54, 0.14);
+  border-radius: 4px;
+  background: rgba(47, 63, 54, 0.06);
+  font-size: 0.9em;
+  padding: 0.08em 0.28em;
+}
+
+.paper-reading-article pre {
+  overflow-x: auto;
+  border: 1px solid var(--faint);
+  border-radius: 4px;
+  background: rgba(255, 255, 250, 0.58);
+  padding: 16px;
+}
+
+.paper-reading-article pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 24px 0 30px;
+}
+
+.paper-reading-article table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.paper-reading-article th,
+.paper-reading-article td {
+  border: 1px solid var(--faint);
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.paper-reading-article th {
+  background: rgba(47, 63, 54, 0.08);
+  color: var(--accent);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  text-align: left;
+}
+
+.paper-reading-article .report-figure {
+  width: min(760px, 100%);
+}
+
+.paper-reading-article .report-figure figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .paper-note-item {
+    padding: 24px 0 26px;
+  }
+
+  .paper-reading-article li {
+    font-size: 16px;
+    line-height: 1.82;
+  }
+}
