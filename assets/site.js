@@ -36,7 +36,7 @@ document.querySelectorAll('[data-filter]').forEach(button => {
   update();
 })();
 
-// Static SVG fallback remains available before scripts load and with reduced motion.
+// Font Awesome Bicycle; animate only the spokes behind its original silhouette.
 (() => {
   const icon = document.querySelector('link[data-bike-icon]');
   const canvas = document.createElement('canvas');
@@ -44,33 +44,26 @@ document.querySelectorAll('[data-filter]').forEach(button => {
   const ctx = canvas.getContext('2d');
   if (!icon || !ctx) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const image = new Image();
   let phase = 0, timer;
   function draw() {
     ctx.clearRect(0, 0, 64, 64);
-    ctx.fillStyle = '#163954';
-    ctx.beginPath(); ctx.roundRect(0, 0, 64, 64, 12); ctx.fill();
-    ctx.lineCap = ctx.lineJoin = 'round';
-    for (const x of [15, 49]) {
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.6;
-      ctx.beginPath(); ctx.arc(x, 44, 12, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = '#e9bd71'; ctx.lineWidth = 1.5;
-      for (let k = 0; k < 6; k++) {
-        const a = phase + k * Math.PI / 3;
-        ctx.beginPath(); ctx.moveTo(x, 44); ctx.lineTo(x + Math.cos(a) * 10, 44 + Math.sin(a) * 10); ctx.stroke();
+    ctx.strokeStyle = '#547996'; ctx.lineWidth = .9;
+    for (const x of [14.6, 49.4]) {
+      for (let k = 0; k < 4; k++) {
+        const a = phase + k * Math.PI / 2;
+        ctx.beginPath();ctx.moveTo(x,41);ctx.lineTo(x+Math.cos(a)*6.3,41+Math.sin(a)*6.3);ctx.stroke();
       }
     }
-    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-    const line = points => {ctx.beginPath(); points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();};
-    line([[15,44],[25,24],[32,44],[15,44],[40,24],[49,44]]);
-    line([[25,24],[40,24]]); line([[21,21],[30,21]]); line([[32,44],[36,48]]);
-    ctx.beginPath();ctx.moveTo(39,20);ctx.lineTo(49,20);ctx.bezierCurveTo(59,20,58,30,51,30);ctx.stroke();
-    icon.type = 'image/png'; icon.href = canvas.toDataURL('image/png');
+    ctx.drawImage(image,0,0,64,64);
+    icon.type = 'image/png';icon.href=canvas.toDataURL('image/png');
   }
   function schedule() {
-    clearTimeout(timer); draw();
-    if (!motion.matches) timer = setTimeout(() => {phase += Math.PI / 12; schedule();}, document.hidden ? 1000 : 180);
+    clearTimeout(timer);draw();
+    if (!motion.matches) timer=setTimeout(()=>{phase+=Math.PI/12;schedule();},document.hidden?1000:180);
   }
-  motion.addEventListener('change', schedule);
-  document.addEventListener('visibilitychange', schedule);
-  schedule();
+  image.onload=schedule;
+  image.src='assets/favicon-bike-64.png?v=3';
+  motion.addEventListener('change',()=>{if(image.complete&&image.naturalWidth)schedule();});
+  document.addEventListener('visibilitychange',()=>{if(image.complete&&image.naturalWidth)schedule();});
 })();
