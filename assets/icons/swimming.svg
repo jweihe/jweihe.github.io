@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Open-water swimming</title>
+  <g fill="none" stroke="#397ead" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="45" cy="18" r="5" fill="#397ead" fill-opacity=".12"/>
+    <path d="m16 15 13-5 10 12-15 11m5-23 3 12 10 10"/>
+    <path d="M6 39c4-5 8-5 13 0s9 5 13 0 9-5 13 0 9 5 13 0M6 50c4-5 8-5 13 0s9 5 13 0 9-5 13 0 9 5 13 0"/>
+  </g>
+</svg>

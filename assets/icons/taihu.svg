@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Taihu Lake</title>
+  <!-- Simplified geographic silhouette. Source: Natural Earth, public domain.
+       https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_50m_lakes.geojson -->
+  <path d="M56.71 44.78 L41.25 54.98 L29.43 58.00 L19.52 54.74 L10.17 44.47 L7.29 30.34 L10.87 18.22 L19.89 9.49 L28.12 6.00 L30.80 7.91 L30.91 9.22 L30.55 10.92 L32.03 13.61 L36.07 13.87 L40.20 14.97 L39.59 18.75 L36.54 21.91 L36.18 24.51 L38.46 28.87 L41.02 32.60 L43.95 34.94 L44.67 39.03 L41.27 43.65 L43.38 45.17 L46.20 45.36 L52.11 41.32 L56.71 44.78 L56.71 44.78 L56.71 44.78 Z" fill="#397ead" fill-opacity=".12" stroke="#397ead" stroke-width="1.8" stroke-linejoin="round" fill-rule="evenodd"/>
+</svg>
