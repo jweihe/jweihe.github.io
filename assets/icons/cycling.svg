@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Cycling</title>
+  <g fill="none" stroke="#3e8172" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="14" cy="43" r="10"/>
+    <circle cx="50" cy="43" r="10"/>
+    <path d="m14 43 13-21 13 21H14m13-21h15m-3-9h6l5 30M22 17h11m-6 0v5"/>
+  </g>
+</svg>
